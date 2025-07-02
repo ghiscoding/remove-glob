@@ -1,0 +1,71 @@
+{
+  "name": "remove-glob",
+  "version": "0.1.0",
+  "description": "A tiny utility to remove items or directories recursively, also supports glob",
+  "bin": {
+    "remove": "dist/cli.js"
+  },
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "module": "./dist/index.js",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "/dist",
+    "/src"
+  ],
+  "license": "MIT",
+  "author": "Ghislain B.",
+  "homepage": "https://github.com/ghiscoding/remove-glob",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ghiscoding/remove-glob.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ghiscoding/remove-glob/issues"
+  },
+  "scripts": {
+    "build": "npm run biome:write && tsc",
+    "biome:check": "npm run biome:lint:check && npm run biome:format:check",
+    "biome:write": "npm run biome:lint:write && npm run biome:format:write",
+    "biome:lint:check": "biome lint ./src",
+    "biome:lint:write": "biome lint --write ./src",
+    "biome:format:check": "biome format ./src",
+    "biome:format:write": "biome format --write ./src",
+    "preview:release": "release-it --only-version --dry-run",
+    "release": "release-it --only-version",
+    "prepack": "node scripts/prepack.js",
+    "postpack": "node scripts/postpack.js",
+    "preview:help": "node dist/cli.js --help",
+    "preview:version": "node dist/cli.js --version",
+    "preview:del1": "node dist/cli.js examples --dry-run",
+    "preview:del2": "node dist/cli.js --glob \"examples/**/*.{js,md}\" --dry-run",
+    "test": "vitest --watch --config ./vitest.config.mts",
+    "test:coverage": "vitest --coverage --config ./vitest.config.mts"
+  },
+  "dependencies": {
+    "cli-nano": "^1.0.2",
+    "tinyglobby": "^0.2.14"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.0.6",
+    "@release-it/conventional-changelog": "^10.0.1",
+    "@types/node": "^22.16.0",
+    "@vitest/coverage-v8": "^3.2.4",
+    "release-it": "^19.0.3",
+    "typescript": "^5.8.3",
+    "vitest": "^3.2.4"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

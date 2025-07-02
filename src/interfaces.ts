@@ -1,0 +1,30 @@
+export interface RemoveOptions {
+  /** Callback to run when the execution finished or an error occured */
+  callback?: (e?: Error) => void;
+
+  /** Show which files would be deleted but without actually deleting them */
+  dryRun?: string;
+
+  /**
+   * The filepath to remove – may be a file or a directory.
+   * An initial existence check is made for this filepath.
+   * Important: This value is resolved to a full path.
+   * Please be aware of how and from where the Node.js file system is resolving your path!
+   */
+  files?: string | string[];
+
+  /** Glob patterns to find which files/directories to remove */
+  glob?: string;
+
+  /**
+   * The directory to resolve your `filepath` from.
+   * Defaults to the `process.cwd()` – aka, the directory that your command is run within.
+   */
+  cwd?: string;
+
+  /** Show the stats of the removed items */
+  stat?: boolean;
+
+  /** Print more information to console */
+  verbose?: boolean;
+}

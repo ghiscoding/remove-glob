@@ -1,0 +1,52 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Debug - CLI directories",
+            "program": "${workspaceFolder}/src/cli.ts",
+            "preLaunchTask": "tsc: build - tsconfig.json",
+            "outFiles": ["${workspaceFolder}/dist/**/*.js"],
+            "args": [
+                "examples/README.md",
+                "examples",
+                "--dry-run",
+                "--stat"
+            ]
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Debug - CLI glob",
+            "program": "${workspaceFolder}/src/cli.ts",
+            "preLaunchTask": "tsc: build - tsconfig.json",
+            "outFiles": ["${workspaceFolder}/dist/**/*.{js,map}"],
+            "args": [
+                "--glob",
+               "dist/**/*.{js,map}",
+                "--dry-run"
+            ]
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Vitest - Debug Current Test File",
+            "autoAttachChildProcesses": true,
+            "skipFiles": [
+                "<node_internals>/**",
+                "**/node_modules/**"
+            ],
+            "program": "${workspaceRoot}/node_modules/vitest/vitest.mjs",
+            "args": [
+                "run",
+                "${relativeFile}",
+                "--no-watch",
+                "--config",
+                "./vitest.config.mts"
+            ],
+            "smartStep": true,
+            "console": "integratedTerminal"
+        }
+    ]
+}
