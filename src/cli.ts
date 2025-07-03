@@ -61,7 +61,7 @@ try {
       verbose: {
         type: 'boolean',
         default: false,
-        description: 'If true, will log more information about the removal process',
+        description: 'If true, it will log each file or directory being removed',
       },
     },
     version: readPackage().version,

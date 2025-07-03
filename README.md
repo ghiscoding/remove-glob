@@ -8,7 +8,7 @@
 
 ## remove-glob
 
-A tiny cross-platform utility to remove items or directories recursively, also accepts optional glob support. There's also a CLI for easy, cross-platform usage. It uses 2 small dependencies [tinyglobby](https://www.npmjs.com/package/tinyglobby) for glob support and [cli-nano](https://www.npmjs.com/package/cli-nano) for the CLI.
+A tiny cross-platform utility to remove items or directories recursively, it also accepts an optional glob pattern. There's also a CLI for easy, cross-platform usage. It uses 2 small dependencies [tinyglobby](https://www.npmjs.com/package/tinyglobby) for glob support and [cli-nano](https://www.npmjs.com/package/cli-nano) for the CLI.
 
 Inspired by [rimraf](https://www.npmjs.com/package/rimraf) and [premove](https://www.npmjs.com/package/premove) but with glob support.
 
@@ -19,25 +19,25 @@ npm install remove-glob
 
 ### Command Line
 
-A `remove` binary is available, it accepts an optional `--cwd` value and a list of paths to delete **or** a `--glob` pattern.
+A `remove` binary is available, it takes 1 or more file/directory paths to be removed or any other options shown below (you can use an optional `--glob` pattern instead of paths).
 
 ```
 Usage:
   remove [files..] [options]  Remove all items recursively
 
 Positionals:
-  files               directories or files to remove                                   [string]
+  files               directories or files to remove                                    [string]
 
 Options:
-      --cwd           Directory to resolve from (default ".")                          [string]
-      --glob          Glob patterns to find which files/directories to remove          [string]
-      --dryRun        Show which files would be deleted but without actually deleting  [boolean]
-      --verbose       If true, will log more information about the removal process     [boolean]
-      --stat          Show the stats of the removed items                              [boolean]
+      --cwd           Directory to resolve from (default ".")                           [string]
+      --dryRun        Show which files would be deleted but without actually deletin... [boolean]
+      --glob          Glob pattern to find which files/directories to remove            [string]
+      --stat          Show the stats of the removed items                               [boolean]
+      --verbose       If true, will log more information about the removal process      [boolean]
 
 Default options:
-  -h, --help          Show help                                                        [boolean]
-  -v, --version       Show version number                                              [boolean]
+  -h, --help          Show help                                                         [boolean]
+  -v, --version       Show version number                                               [boolean]
 ```
 
 remove files or directories.  Note: on Windows globs must be **double quoted**, everybody else can quote however they please.
@@ -81,19 +81,18 @@ import { removeSync } from 'remove-glob';
 removeSync(opt, callback);
 ```
 
-The first argument is an object holding any of the options shown below.
-The second and last argument is an optional callback function which is executed after all files are removed.
+The first argument is an object holding any of the options shown below. The last argument is an optional callback function which is executed (when defined) after all files are removed.
 
 ```js
 {
-    cwd: string,                // directory to resolve your `filepath` from, defaults to `process.cwd()`
-    dryRun: bool,               // show what would be copied, without actually copying anything
-    files: string | string[],   // filepath(s) to remove – may be a file or a directory.
-    glob: string,               // glob pattern to find which files/directories to remove
-    stats: bool                 // show some statistics after execution (time + file count)
-    verbose: bool,              // print more information to console
+  cwd: string,              // directory to resolve your `filepath` from, defaults to `process.cwd()`
+  dryRun: bool,             // show what would be copied, without actually copying anything
+  files: string | string[], // filepath(s) to remove – may be a file or a directory.
+  glob: string,             // glob pattern to find which files/directories to remove
+  stats: bool               // show some statistics after execution (time + file count)
+  verbose: bool,            // print more information to console when executing the removal
 }
 ```
 
 > [!WARNING]
-> The first argument is necessary and it must include either a `files` or the `glob` property (but it cannot be both).
+> The first argument is necessary and it **must** include a `files` or a `glob` (but it cannot include both options together).
