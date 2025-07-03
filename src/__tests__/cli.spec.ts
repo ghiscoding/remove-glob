@@ -20,7 +20,7 @@ describe('remove-glob', () => {
 
   beforeEach(() => {
     cleanupFolders();
-    removeSync({ files: 'test-cli/other' });
+    removeSync({ paths: 'test-cli/other' });
   });
 
   test(

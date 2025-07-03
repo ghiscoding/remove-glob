@@ -10,7 +10,7 @@
 
 A tiny cross-platform utility to remove items or directories recursively, it also accepts an optional glob pattern. There's also a CLI for easy, cross-platform usage. It uses 2 small dependencies [tinyglobby](https://www.npmjs.com/package/tinyglobby) for glob support and [cli-nano](https://www.npmjs.com/package/cli-nano) for the CLI.
 
-Inspired by [rimraf](https://www.npmjs.com/package/rimraf) and [premove](https://www.npmjs.com/package/premove) but with glob support.
+Inspired by [rimraf](https://www.npmjs.com/package/rimraf) and [premove](https://www.npmjs.com/package/premove) but also supports glob pattern to remove files or directories.
 
 ### Install
 ```sh
@@ -23,30 +23,30 @@ A `remove` binary is available, it takes 1 or more file/directory paths to be re
 
 ```
 Usage:
-  remove [files..] [options]  Remove all items recursively
+  remove [paths..] [options]  Remove all items recursively
 
 Positionals:
-  files               directories or files to remove                                    [string]
+  paths               directory or file paths to remove                                 [string]
 
 Options:
       --cwd           Directory to resolve from (default ".")                           [string]
-      --dryRun        Show which files would be deleted but without actually deletin... [boolean]
-      --glob          Glob pattern to find which files/directories to remove            [string]
-      --stat          Show the stats of the removed items                               [boolean]
-      --verbose       If true, will log more information about the removal process      [boolean]
+      --dryRun        Show which files/dirs would be deleted but without actually re... [boolean]
+      --glob          Glob pattern to find which files/dirs to remove                   [string]
+      --stat          Show the stats of the items being removed                         [boolean]
+      --verbose       If true, it will log each file or directory being removed         [boolean]
 
 Default options:
   -h, --help          Show help                                                         [boolean]
   -v, --version       Show version number                                               [boolean]
 ```
 
-remove files or directories.  Note: on Windows globs must be **double quoted**, everybody else can quote however they please.
+Remove files or directories.  Note: on Windows globs must be **double quoted**, everybody else can quote however they please.
 
 ```sh
 # remove "foo" and "bar" via `npx`
 $ npx remove foo bar
 
-# remove using glob pattern
+# or remove using glob pattern
 $ npx remove --glob \"dist/**/*.js\"
 
 # install globally, use whenever
@@ -62,15 +62,19 @@ import { resolve } from 'node:path';
 import { removeSync } from 'remove-glob';
 
 try {
-  removeSync({ files: './foobar' });
-  removeSync({ files: ['./foo/file1.txt', './foo/file2.txt'] });
+  // remove via paths
+  removeSync({ paths: './foobar' });
+  removeSync({ paths: ['./foo/file1.txt', './foo/file2.txt'] });
+
+  // or remove via glob pattern
+  removeSync({ glob: 'foo/**/*.txt' })
 } catch (err) {
   //
 }
 
 // Using `cwd` option
 const dir = resolve('./foo/bar');
-await removeSync({ files: ['hello.txt'], cwd: dir });
+await removeSync({ paths: ['hello.txt'], cwd: dir });
 ```
 
 ### JavaScript API
@@ -87,7 +91,7 @@ The first argument is an object holding any of the options shown below. The last
 {
   cwd: string,              // directory to resolve your `filepath` from, defaults to `process.cwd()`
   dryRun: bool,             // show what would be copied, without actually copying anything
-  files: string | string[], // filepath(s) to remove – may be a file or a directory.
+  paths: string | string[], // filepath(s) to remove – may be a file or a directory.
   glob: string,             // glob pattern to find which files/directories to remove
   stats: bool               // show some statistics after execution (time + file count)
   verbose: bool,            // print more information to console when executing the removal
@@ -95,4 +99,4 @@ The first argument is an object holding any of the options shown below. The last
 ```
 
 > [!WARNING]
-> The first argument is necessary and it **must** include a `files` or a `glob` (but it cannot include both options together).
+> The first argument is necessary and it **must** include a `paths` or a `glob` (but it cannot include both options together).
