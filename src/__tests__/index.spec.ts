@@ -370,6 +370,30 @@ describe('test remove-glob CLI', () => {
       expect(existsSync(f4)).toBeFalsy();
     });
 
+    test('remove multiple files using multiple glob patterns', async () => {
+      const f1 = touch('./tests/foo/bar/baz/bat/hello.txt');
+      const f2 = touch('./tests/foo/bar/baz/bat/world.txt');
+      const f3 = touch('./tests/foo/bar/baz/hello.doc');
+      const f4 = touch('./tests/foo/hello.md');
+
+      const dir = resolve('./tests/foo');
+
+      expect(existsSync(dir)).toBeTruthy();
+      expect(existsSync(f1)).toBeTruthy();
+      expect(existsSync(f2)).toBeTruthy();
+      expect(existsSync(f3)).toBeTruthy();
+      expect(existsSync(f4)).toBeTruthy();
+
+      const output = removeSync({ glob: ['./tests/**/*.txt', './tests/**/*.{doc,md}'] });
+      expect(output).toBeTruthy();
+
+      expect(existsSync(dir)).toBeTruthy();
+      expect(existsSync(f1)).toBeFalsy();
+      expect(existsSync(f2)).toBeFalsy();
+      expect(existsSync(f3)).toBeFalsy();
+      expect(existsSync(f4)).toBeFalsy();
+    });
+
     test('file does not exist using glob', async () => {
       const file = removeSync({ glob: './tests/404.txt' });
       expect(file).toBeFalsy();

@@ -31,7 +31,7 @@ Positionals:
 Options:
       --cwd           Directory to resolve from (default ".")                           [string]
       --dryRun        Show which files/dirs would be deleted but without actually re... [boolean]
-      --glob          Glob pattern to find which files/dirs to remove                   [string]
+      --glob          Glob pattern(s) to find which files/dirs to remove                [array]
       --stat          Show the stats of the items being removed                         [boolean]
       --verbose       If true, it will log each file or directory being removed         [boolean]
 
@@ -46,8 +46,9 @@ Remove files or directories.  Note: on Windows globs must be **double quoted**, 
 # remove "foo" and "bar" via `npx`
 $ npx remove foo bar
 
-# or remove using glob pattern
+# or remove using glob pattern(s)
 $ npx remove --glob \"dist/**/*.js\"
+$ npx remove --glob=\"dist/**/*.js\" --glob=\"packages/*/tsconfig.tsbuildinfo\"
 
 # install globally, use whenever
 $ npm install remove-glob -g

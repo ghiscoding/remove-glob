@@ -50,8 +50,8 @@ try {
         description: 'Show which files/dirs would be deleted but without actually removing them',
       },
       glob: {
-        type: 'string',
-        description: 'Glob pattern to find which files/dirs to remove',
+        type: 'array',
+        description: 'Glob pattern(s) to find which files/dirs to remove',
       },
       stat: {
         type: 'boolean',
