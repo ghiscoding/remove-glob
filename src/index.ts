@@ -1,5 +1,5 @@
-import { existsSync, rmSync, statSync, unlinkSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { existsSync, readdirSync, rmSync, statSync, unlinkSync } from 'node:fs';
+import { join, resolve } from 'node:path';
 import { globSync } from 'tinyglobby';
 
 import type { RemoveOptions } from './interfaces.js';
@@ -18,8 +18,9 @@ function throwOrCallback(err?: Error, cb?: (e?: Error) => void) {
  * @param {RemoveOptions} options - CLI options
  * @param {(e?: Error) => void} callback - optional callback that will be executed after remove is finished or when an error occurs
  */
-export function removeSync(files: string | string[], opts: RemoveOptions = {}, callback?: (e?: Error) => void) {
+export function removeSync(opts: RemoveOptions = {}, callback?: (e?: Error) => void) {
   const cb = callback || opts.callback;
+  const files = opts.files || [];
   if (!files.length && !opts.glob) {
     throwOrCallback(
       new Error(
@@ -29,45 +30,52 @@ export function removeSync(files: string | string[], opts: RemoveOptions = {}, c
     );
     return;
   }
+  if (files.length && opts.glob) {
+    throwOrCallback(
+      new Error('Providing both `--files` and `--glob` pattern are not supported, you must provide only one of these options.'),
+      cb,
+    );
+    return;
+  }
   let pathExists = false;
-  let paths = Array.isArray(files) ? files : typeof files === 'string' ? [files] : [];
-
-  // when providing paths input with custom `cwd`, we need to remap all input paths
-  // however, when provided as `--glob` then we will use tinyglobby option
-  if (paths.length && opts.cwd) {
-    paths.forEach((path, idx) => (paths[idx] = resolve(opts.cwd || '.', path)));
-  } else if (opts.glob) {
-    paths = globSync([opts.glob!], { cwd: opts.cwd || '.', dot: true, onlyFiles: false, absolute: true });
+  let paths = Array.isArray(files) ? files : files.length ? [files] : [];
+  const requiresCwdChange = !!(paths.length && opts.cwd);
+  if (!paths.length) {
+    paths = globSync([opts.glob!], { cwd: opts.cwd, dot: true, onlyFiles: false, absolute: true });
   }
   opts.stat && console.time('Duration');
   opts.dryRun && console.log('=== dry-run ===');
 
-  try {
-    paths.forEach(path => {
-      if (existsSync(path)) {
-        if (statSync(path).isDirectory()) {
-          // directories
-          if (opts.dryRun) {
-            console.log('would remove directory:', path);
-          } else {
-            opts.verbose && console.log('removing directory:', path);
-            rmSync(path, { recursive: true, force: true });
-          }
+  paths.forEach(path => {
+    // do we need to resolve file/dir from a different cwd?
+    if (requiresCwdChange) {
+      path = resolve(opts.cwd || '.', path);
+    }
+
+    if (existsSync(path)) {
+      if (statSync(path).isDirectory()) {
+        // directories
+        if (opts.dryRun) {
+          console.log(`would remove directory: ${path}`);
         } else {
-          // files
-          if (opts.dryRun) {
-            console.log('would remove file:', path);
-          } else {
-            opts.verbose && console.log('removing file:', path);
-            unlinkSync(path);
-          }
+          opts.verbose && console.log(`removing directory: ${path}`);
+          readdirSync(path).forEach(name => {
+            removeSync({ files: join(path, name) }); // recursively remove content
+          });
+          rmSync(path, { recursive: true, force: true });
         }
-        pathExists = true;
+      } else {
+        // files
+        if (opts.dryRun) {
+          console.log(`would remove file: ${path}`);
+        } else {
+          opts.verbose && console.log(`removing file: ${path}`);
+          unlinkSync(path);
+        }
       }
-    });
-  } catch {
-    // an error might occur if a directory was deleted before any of its files were processed
-  }
+      pathExists = true;
+    }
+  });
 
   if (opts.stat || opts.verbose) {
     console.log(`Removed:  ${paths.length} items`);

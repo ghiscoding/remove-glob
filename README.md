@@ -62,15 +62,15 @@ import { resolve } from 'node:path';
 import { removeSync } from 'remove-glob';
 
 try {
-  removeSync('./foobar');
-  removeSync(['./foo/file1.txt', './foo/file2.txt']);
+  removeSync({ files: './foobar' });
+  removeSync({ files: ['./foo/file1.txt', './foo/file2.txt'] });
 } catch (err) {
   //
 }
 
 // Using `cwd` option
 const dir = resolve('./foo/bar');
-await removeSync(['hello.txt'], { cwd: dir });
+await removeSync({ files: ['hello.txt'], cwd: dir });
 ```
 
 ### JavaScript API
@@ -78,18 +78,22 @@ await removeSync(['hello.txt'], { cwd: dir });
 ```js
 import { removeSync } from 'remove-glob';
 
-removeSync([paths], opt, callback);
+removeSync(opt, callback);
 ```
 
-The first argument is an array of paths to remove and the second and last argument 
-is an optional callback function which is executed after after all files are removed
+The first argument is an object holding any of the options shown below.
+The second and last argument is an optional callback function which is executed after all files are removed.
 
 ```js
 {
-    cwd: string,        // directory to resolve your `filepath` from, defaults to `process.cwd()`
-    dryRun: bool,       // show what would be copied, without actually copying anything
-    glob: string,       // glob patterns to find which files/directories to remove
-    stats: bool         // show statistics after execution (time + file count)
-    verbose: bool,      // print more information to console
+    cwd: string,                // directory to resolve your `filepath` from, defaults to `process.cwd()`
+    dryRun: bool,               // show what would be copied, without actually copying anything
+    files: string | string[],   // filepath(s) to remove – may be a file or a directory.
+    glob: string,               // glob pattern to find which files/directories to remove
+    stats: bool                 // show some statistics after execution (time + file count)
+    verbose: bool,              // print more information to console
 }
 ```
+
+> [!WARNING]
+> The first argument is necessary and it must include either a `files` or the `glob` property (but it cannot be both).
