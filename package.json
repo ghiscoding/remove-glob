@@ -67,5 +67,9 @@
   },
   "engines": {
     "node": ">=20.0.0"
+  },
+  "funding": {
+    "type": "ko_fi",
+    "url": "https://ko-fi.com/ghiscoding"
   }
 }
