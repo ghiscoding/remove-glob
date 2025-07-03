@@ -5,6 +5,7 @@
 [![npm](https://img.shields.io/npm/v/remove-glob.svg)](https://www.npmjs.com/package/remove-glob)
 [![npm](https://img.shields.io/npm/dy/remove-glob)](https://www.npmjs.com/package/remove-glob)
 [![npm bundle size](https://img.shields.io/bundlephobia/minzip/remove-glob?color=success&label=gzip)](https://bundlephobia.com/result?p=remove-glob)
+<a href="https://nodejs.org/en/about/previous-releases"><img src="https://img.shields.io/node/v/remove-glob.svg" alt="Node" /></a>
 
 ## remove-glob
 
