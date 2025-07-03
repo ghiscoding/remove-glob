@@ -31,8 +31,8 @@ try {
       description: 'Remove all items recursively',
       positionals: [
         {
-          name: 'files',
-          description: 'directories or files to remove',
+          name: 'paths',
+          description: 'directory or file paths to remove',
           type: 'string',
           variadic: true,
           required: false,
@@ -47,16 +47,16 @@ try {
       dryRun: {
         type: 'boolean',
         default: false,
-        description: 'Show which files would be deleted but without actually deleting them',
+        description: 'Show which files/dirs would be deleted but without actually removing them',
       },
       glob: {
         type: 'string',
-        description: 'Glob pattern to find which files/directories to remove',
+        description: 'Glob pattern to find which files/dirs to remove',
       },
       stat: {
         type: 'boolean',
         default: false,
-        description: 'Show the stats of the removed items',
+        description: 'Show the stats of the items being removed',
       },
       verbose: {
         type: 'boolean',

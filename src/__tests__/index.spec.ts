@@ -22,7 +22,7 @@ describe('test remove-glob CLI', () => {
     expect(removeSync).toBeTypeOf('function');
   });
 
-  test('throws when both `files` and `glob` are missing', () => {
+  test('throws when both `paths` and `glob` are missing', () => {
     const foo = touch('./tests/foo.txt');
     const bar = touch('./tests/bar.txt');
 
@@ -30,12 +30,12 @@ describe('test remove-glob CLI', () => {
     expect(existsSync(bar)).toBeTruthy();
     expect(existsSync('./tests')).toBeTruthy();
 
-    expect(() => removeSync({ files: undefined, dryRun: true })).toThrow(
+    expect(() => removeSync({ paths: undefined, dryRun: true })).toThrow(
       'Please make sure to provide file paths via command arguments or via `--glob` pattern',
     );
   });
 
-  test('throws when both `files` and `glob` are provided', () => {
+  test('throws when both `paths` and `glob` are provided', () => {
     const foo = touch('./tests/foo.txt');
     const bar = touch('./tests/bar.txt');
 
@@ -43,8 +43,8 @@ describe('test remove-glob CLI', () => {
     expect(existsSync(bar)).toBeTruthy();
     expect(existsSync('./tests')).toBeTruthy();
 
-    expect(() => removeSync({ files: 'file1.txt', glob: 'dist/**' })).toThrow(
-      'Providing both `--files` and `--glob` pattern are not supported, you must provide only one of these options.',
+    expect(() => removeSync({ paths: 'file1.txt', glob: 'dist/**' })).toThrow(
+      'Providing both `--paths` and `--glob` pattern are not supported, you must provide only one of these options.',
     );
   });
 
@@ -60,14 +60,14 @@ describe('test remove-glob CLI', () => {
       expect(existsSync(foo)).toBeTruthy();
       expect(existsSync(bar)).toBeTruthy();
 
-      const out = removeSync({ files: foo });
+      const out = removeSync({ paths: foo });
       expect(out).toBeTypeOf('boolean');
       expect(out).toBeTruthy();
 
       expect(existsSync(foo)).toBeFalsy();
       expect(existsSync(bar)).toBeTruthy();
 
-      removeSync({ files: bar }); // cleanup
+      removeSync({ paths: bar }); // cleanup
       expect(existsSync(bar)).toBeFalsy();
     });
 
@@ -76,7 +76,7 @@ describe('test remove-glob CLI', () => {
       mkdirSync(str, { recursive: true });
       expect(existsSync(str)).toBeTruthy();
 
-      removeSync({ files: str });
+      removeSync({ paths: str });
       expect(existsSync(str)).toBeFalsy();
     });
 
@@ -85,13 +85,13 @@ describe('test remove-glob CLI', () => {
       const bar = dirname(foo);
       expect(existsSync(foo)).toBeTruthy();
 
-      const output = removeSync({ files: foo });
+      const output = removeSync({ paths: foo });
       expect(output).toBeTruthy();
 
       expect(existsSync(foo)).toBeFalsy();
       expect(existsSync(bar)).toBeTruthy();
 
-      removeSync({ files: bar }); // cleanup
+      removeSync({ paths: bar }); // cleanup
       expect(existsSync(bar)).toBeFalsy();
     });
 
@@ -102,7 +102,7 @@ describe('test remove-glob CLI', () => {
       expect(existsSync(dir)).toBeTruthy();
       expect(existsSync(file)).toBeTruthy();
 
-      const output = removeSync({ files: dir });
+      const output = removeSync({ paths: dir });
       expect(output).toBeTruthy();
 
       expect(existsSync(dir)).toBeFalsy();
@@ -118,7 +118,7 @@ describe('test remove-glob CLI', () => {
       expect(existsSync(file)).toBeTruthy();
       expect(existsSync(baz)).toBeTruthy();
 
-      const output = removeSync({ files: dir });
+      const output = removeSync({ paths: dir });
       expect(output).toBeTruthy();
 
       expect(existsSync(dir)).toBeFalsy();
@@ -126,7 +126,7 @@ describe('test remove-glob CLI', () => {
       expect(existsSync(baz)).toBeTruthy();
 
       const foo = resolve('./foo');
-      removeSync({ files: foo });
+      removeSync({ paths: foo });
       expect(existsSync(foo)).toBeFalsy();
     });
 
@@ -144,7 +144,7 @@ describe('test remove-glob CLI', () => {
       expect(existsSync(f3)).toBeTruthy();
       expect(existsSync(f4)).toBeTruthy();
 
-      const output = removeSync({ files: dir });
+      const output = removeSync({ paths: dir });
       expect(output).toBeTruthy();
 
       expect(existsSync(dir)).toBeFalsy();
@@ -155,10 +155,10 @@ describe('test remove-glob CLI', () => {
     });
 
     test('file does not exist using positional', async () => {
-      const file = removeSync({ files: './tests/404.txt' });
+      const file = removeSync({ paths: './tests/404.txt' });
       expect(file).toBeFalsy();
 
-      const dir = removeSync({ files: './tests/foo' });
+      const dir = removeSync({ paths: './tests/foo' });
       expect(dir).toBeFalsy();
     });
 
@@ -167,11 +167,11 @@ describe('test remove-glob CLI', () => {
       const dir = dirname(file);
 
       expect(existsSync(file)).toBeTruthy();
-      let output = removeSync({ files: 'hello.txt', cwd: dir });
+      let output = removeSync({ paths: 'hello.txt', cwd: dir });
       expect(output).toBeTruthy();
       expect(existsSync(file)).toBeFalsy();
 
-      output = removeSync({ files: dir });
+      output = removeSync({ paths: dir });
       expect(output).toBeTruthy();
       expect(existsSync(dir)).toBeFalsy();
     });
@@ -183,7 +183,7 @@ describe('test remove-glob CLI', () => {
       mkdirSync(str, { recursive: true });
       expect(existsSync(str)).toBeTruthy();
 
-      const output = removeSync({ files: str, dryRun: true });
+      const output = removeSync({ paths: str, dryRun: true });
 
       expect(existsSync(str)).toBeTruthy();
       expect(output).toBeTruthy();
@@ -201,7 +201,7 @@ describe('test remove-glob CLI', () => {
       expect(existsSync(bar)).toBeTruthy();
       expect(existsSync('./tests')).toBeTruthy();
 
-      const output = removeSync({ files: ['./tests/foo.txt', './tests/bar.txt'], dryRun: true });
+      const output = removeSync({ paths: ['./tests/foo.txt', './tests/bar.txt'], dryRun: true });
 
       expect(existsSync('./tests')).toBeTruthy();
       expect(output).toBeTruthy();
@@ -219,7 +219,7 @@ describe('test remove-glob CLI', () => {
       expect(existsSync(bar)).toBeTruthy();
       expect(existsSync('./tests')).toBeTruthy();
 
-      const output = removeSync({ files: ['./tests/foo.txt', './tests/bar.txt'], verbose: true });
+      const output = removeSync({ paths: ['./tests/foo.txt', './tests/bar.txt'], verbose: true });
 
       expect(existsSync('./tests')).toBeTruthy();
       expect(output).toBeTruthy();
@@ -239,7 +239,7 @@ describe('test remove-glob CLI', () => {
       expect(existsSync(bar)).toBeTruthy();
       expect(existsSync('./tests')).toBeTruthy();
 
-      const output = removeSync({ files: ['./tests/foo.txt', './tests/bar.txt'], dryRun: true }, callbackMock);
+      const output = removeSync({ paths: ['./tests/foo.txt', './tests/bar.txt'], dryRun: true }, callbackMock);
 
       expect(existsSync('./tests')).toBeTruthy();
       expect(output).toBeTruthy();
@@ -258,7 +258,7 @@ describe('test remove-glob CLI', () => {
       expect(existsSync(bar)).toBeTruthy();
       expect(existsSync('./tests')).toBeTruthy();
 
-      removeSync({ files: undefined, dryRun: true }, callbackMock);
+      removeSync({ paths: undefined, dryRun: true }, callbackMock);
 
       expect(callbackMock).toHaveBeenCalled();
     });
@@ -276,14 +276,14 @@ describe('test remove-glob CLI', () => {
       expect(existsSync(foo)).toBeTruthy();
       expect(existsSync(bar)).toBeTruthy();
 
-      const out = removeSync({ files: [], glob: '**/foo.txt' });
+      const out = removeSync({ paths: [], glob: '**/foo.txt' });
       expect(out).toBeTypeOf('boolean');
       expect(out).toBeTruthy();
 
       expect(existsSync(foo)).toBeFalsy();
       expect(existsSync(bar)).toBeTruthy();
 
-      removeSync({ files: '', glob: '**/bar.txt' }); // cleanup
+      removeSync({ paths: '', glob: '**/bar.txt' }); // cleanup
       expect(existsSync(bar)).toBeFalsy();
     });
 
@@ -342,7 +342,7 @@ describe('test remove-glob CLI', () => {
       expect(existsSync(baz)).toBeTruthy();
 
       const foo = resolve('./foo');
-      removeSync({ files: foo });
+      removeSync({ paths: foo });
       expect(existsSync(foo)).toBeFalsy();
     });
 

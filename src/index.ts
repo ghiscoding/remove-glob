@@ -20,8 +20,8 @@ function throwOrCallback(err?: Error, cb?: (e?: Error) => void) {
  */
 export function removeSync(opts: RemoveOptions = {}, callback?: (e?: Error) => void) {
   const cb = callback || opts.callback;
-  const files = opts.files || [];
-  if (!files.length && !opts.glob) {
+  let paths = opts.paths || [];
+  if (!paths.length && !opts.glob) {
     throwOrCallback(
       new Error(
         'Please make sure to provide file paths via command arguments or via `--glob` pattern, i.e.: "remove dir" or "remove --glob dir/**/*.js"',
@@ -30,15 +30,17 @@ export function removeSync(opts: RemoveOptions = {}, callback?: (e?: Error) => v
     );
     return;
   }
-  if (files.length && opts.glob) {
+  if (paths.length && opts.glob) {
     throwOrCallback(
-      new Error('Providing both `--files` and `--glob` pattern are not supported, you must provide only one of these options.'),
+      new Error('Providing both `--paths` and `--glob` pattern are not supported, you must provide only one of these options.'),
       cb,
     );
     return;
   }
   let pathExists = false;
-  let paths = Array.isArray(files) ? files : files.length ? [files] : [];
+  if (!Array.isArray(paths)) {
+    paths = paths.length ? [paths] : [];
+  }
   const requiresCwdChange = !!(paths.length && opts.cwd);
   if (!paths.length) {
     paths = globSync([opts.glob!], { cwd: opts.cwd, dot: true, onlyFiles: false, absolute: true });
@@ -60,7 +62,7 @@ export function removeSync(opts: RemoveOptions = {}, callback?: (e?: Error) => v
         } else {
           opts.verbose && console.log(`removing directory: ${path}`);
           readdirSync(path).forEach(name => {
-            removeSync({ files: join(path, name) }); // recursively remove content
+            removeSync({ paths: join(path, name) }); // recursively remove content
           });
           rmSync(path, { recursive: true, force: true });
         }
