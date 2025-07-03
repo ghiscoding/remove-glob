@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'cli-nano';
 
 import { removeSync } from './index.js';
+import type { RemoveOptions } from './interfaces.js';
 
 function readPackage() {
   const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -50,7 +51,7 @@ try {
       },
       glob: {
         type: 'string',
-        description: 'Glob patterns to find which files/directories to remove',
+        description: 'Glob pattern to find which files/directories to remove',
       },
       stat: {
         type: 'boolean',
@@ -67,7 +68,7 @@ try {
   });
 
   // execute remove function
-  removeSync(results.files || [], results);
+  removeSync(results as RemoveOptions, err => handleError(err));
 } catch (err) {
   handleError(err as Error);
 }

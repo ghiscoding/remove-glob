@@ -4,11 +4,12 @@ export default defineConfig({
   test: {
     cache: false,
     clearMocks: true,
+    environment: 'node',
     deps: {
       interopDefault: false,
     },
     coverage: {
-      exclude: [...configDefaults.exclude, '**/interfaces.ts', '**/examples/**', '*.mjs'],
+      exclude: [...configDefaults.exclude, '**/interfaces.ts', '**/scripts/**', '*.mjs'],
     },
     watch: false,
   },

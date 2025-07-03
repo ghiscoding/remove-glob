@@ -3,10 +3,10 @@ export interface RemoveOptions {
   callback?: (e?: Error) => void;
 
   /** Show which files would be deleted but without actually deleting them */
-  dryRun?: string;
+  dryRun?: boolean;
 
   /**
-   * The filepath to remove – may be a file or a directory.
+   * The filepath(s) to remove – may be a file or a directory.
    * An initial existence check is made for this filepath.
    * Important: This value is resolved to a full path.
    * Please be aware of how and from where the Node.js file system is resolving your path!

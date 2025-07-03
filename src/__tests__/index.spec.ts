@@ -1,6 +1,6 @@
-import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
-import { afterEach, describe, expect, test } from 'vitest';
+import { afterEach, describe, expect, test, vi } from 'vitest';
 
 import { removeSync } from '../index.js';
 
@@ -15,14 +15,44 @@ function touch(str: string): string {
 
 describe('test remove-glob CLI', () => {
   afterEach(() => {
-    removeSync('tests');
+    rmSync('tests', { recursive: true, force: true });
   });
 
   test('exports', () => {
     expect(removeSync).toBeTypeOf('function');
   });
 
+  test('throws when both `files` and `glob` are missing', () => {
+    const foo = touch('./tests/foo.txt');
+    const bar = touch('./tests/bar.txt');
+
+    expect(existsSync(foo)).toBeTruthy();
+    expect(existsSync(bar)).toBeTruthy();
+    expect(existsSync('./tests')).toBeTruthy();
+
+    expect(() => removeSync({ files: undefined, dryRun: true })).toThrow(
+      'Please make sure to provide file paths via command arguments or via `--glob` pattern',
+    );
+  });
+
+  test('throws when both `files` and `glob` are provided', () => {
+    const foo = touch('./tests/foo.txt');
+    const bar = touch('./tests/bar.txt');
+
+    expect(existsSync(foo)).toBeTruthy();
+    expect(existsSync(bar)).toBeTruthy();
+    expect(existsSync('./tests')).toBeTruthy();
+
+    expect(() => removeSync({ files: 'file1.txt', glob: 'dist/**' })).toThrow(
+      'Providing both `--files` and `--glob` pattern are not supported, you must provide only one of these options.',
+    );
+  });
+
   describe('positional arguments', () => {
+    afterEach(() => {
+      rmSync('tests', { recursive: true, force: true });
+    });
+
     test('remove single file using positional', () => {
       const foo = touch('./tests/foo.txt');
       const bar = touch('./tests/bar.txt');
@@ -30,14 +60,14 @@ describe('test remove-glob CLI', () => {
       expect(existsSync(foo)).toBeTruthy();
       expect(existsSync(bar)).toBeTruthy();
 
-      const out = removeSync(foo);
+      const out = removeSync({ files: foo });
       expect(out).toBeTypeOf('boolean');
       expect(out).toBeTruthy();
 
       expect(existsSync(foo)).toBeFalsy();
       expect(existsSync(bar)).toBeTruthy();
 
-      removeSync(bar); // cleanup
+      removeSync({ files: bar }); // cleanup
       expect(existsSync(bar)).toBeFalsy();
     });
 
@@ -46,7 +76,7 @@ describe('test remove-glob CLI', () => {
       mkdirSync(str, { recursive: true });
       expect(existsSync(str)).toBeTruthy();
 
-      removeSync(str);
+      removeSync({ files: str });
       expect(existsSync(str)).toBeFalsy();
     });
 
@@ -55,13 +85,13 @@ describe('test remove-glob CLI', () => {
       const bar = dirname(foo);
       expect(existsSync(foo)).toBeTruthy();
 
-      const output = removeSync(foo);
+      const output = removeSync({ files: foo });
       expect(output).toBeTruthy();
 
       expect(existsSync(foo)).toBeFalsy();
       expect(existsSync(bar)).toBeTruthy();
 
-      removeSync(bar); // cleanup
+      removeSync({ files: bar }); // cleanup
       expect(existsSync(bar)).toBeFalsy();
     });
 
@@ -72,7 +102,7 @@ describe('test remove-glob CLI', () => {
       expect(existsSync(dir)).toBeTruthy();
       expect(existsSync(file)).toBeTruthy();
 
-      const output = removeSync(dir);
+      const output = removeSync({ files: dir });
       expect(output).toBeTruthy();
 
       expect(existsSync(dir)).toBeFalsy();
@@ -88,7 +118,7 @@ describe('test remove-glob CLI', () => {
       expect(existsSync(file)).toBeTruthy();
       expect(existsSync(baz)).toBeTruthy();
 
-      const output = removeSync(dir);
+      const output = removeSync({ files: dir });
       expect(output).toBeTruthy();
 
       expect(existsSync(dir)).toBeFalsy();
@@ -96,7 +126,7 @@ describe('test remove-glob CLI', () => {
       expect(existsSync(baz)).toBeTruthy();
 
       const foo = resolve('./foo');
-      removeSync(foo);
+      removeSync({ files: foo });
       expect(existsSync(foo)).toBeFalsy();
     });
 
@@ -114,7 +144,7 @@ describe('test remove-glob CLI', () => {
       expect(existsSync(f3)).toBeTruthy();
       expect(existsSync(f4)).toBeTruthy();
 
-      const output = removeSync(dir);
+      const output = removeSync({ files: dir });
       expect(output).toBeTruthy();
 
       expect(existsSync(dir)).toBeFalsy();
@@ -125,10 +155,10 @@ describe('test remove-glob CLI', () => {
     });
 
     test('file does not exist using positional', async () => {
-      const file = removeSync('./tests/404.txt');
+      const file = removeSync({ files: './tests/404.txt' });
       expect(file).toBeFalsy();
 
-      const dir = removeSync('./tests/foo');
+      const dir = removeSync({ files: './tests/foo' });
       expect(dir).toBeFalsy();
     });
 
@@ -137,17 +167,108 @@ describe('test remove-glob CLI', () => {
       const dir = dirname(file);
 
       expect(existsSync(file)).toBeTruthy();
-      let output = removeSync('hello.txt', { cwd: dir });
+      let output = removeSync({ files: 'hello.txt', cwd: dir });
       expect(output).toBeTruthy();
       expect(existsSync(file)).toBeFalsy();
 
-      output = removeSync(dir);
+      output = removeSync({ files: dir });
       expect(output).toBeTruthy();
       expect(existsSync(dir)).toBeFalsy();
+    });
+
+    test('dry-run option should log directories to be removed without actually removing them using positional args', () => {
+      const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+
+      const str = resolve('./tests/foo');
+      mkdirSync(str, { recursive: true });
+      expect(existsSync(str)).toBeTruthy();
+
+      const output = removeSync({ files: str, dryRun: true });
+
+      expect(existsSync(str)).toBeTruthy();
+      expect(output).toBeTruthy();
+      expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('=== dry-run ==='));
+      expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('would remove directory: '));
+      expect(logSpy).toHaveBeenCalled();
+    });
+
+    test('dry-run option should log files to be removed without actually removing them using positional args', () => {
+      const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+      const foo = touch('./tests/foo.txt');
+      const bar = touch('./tests/bar.txt');
+
+      expect(existsSync(foo)).toBeTruthy();
+      expect(existsSync(bar)).toBeTruthy();
+      expect(existsSync('./tests')).toBeTruthy();
+
+      const output = removeSync({ files: ['./tests/foo.txt', './tests/bar.txt'], dryRun: true });
+
+      expect(existsSync('./tests')).toBeTruthy();
+      expect(output).toBeTruthy();
+      expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('=== dry-run ==='));
+      expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('would remove file: '));
+      expect(logSpy).toHaveBeenCalled();
+    });
+
+    test('verbose option should remove file and also log which are being removed using positional args', () => {
+      const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+      const foo = touch('./tests/foo.txt');
+      const bar = touch('./tests/bar.txt');
+
+      expect(existsSync(foo)).toBeTruthy();
+      expect(existsSync(bar)).toBeTruthy();
+      expect(existsSync('./tests')).toBeTruthy();
+
+      const output = removeSync({ files: ['./tests/foo.txt', './tests/bar.txt'], verbose: true });
+
+      expect(existsSync('./tests')).toBeTruthy();
+      expect(output).toBeTruthy();
+      expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('removing file: ./tests/foo.txt'));
+      expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('removing file: ./tests/bar.txt'));
+      expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('Removed:  2 items'));
+      expect(logSpy).toHaveBeenCalled();
+    });
+
+    test('callback is executed when provided as last argument', () => {
+      const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+      const foo = touch('./tests/foo.txt');
+      const bar = touch('./tests/bar.txt');
+      const callbackMock = vi.fn();
+
+      expect(existsSync(foo)).toBeTruthy();
+      expect(existsSync(bar)).toBeTruthy();
+      expect(existsSync('./tests')).toBeTruthy();
+
+      const output = removeSync({ files: ['./tests/foo.txt', './tests/bar.txt'], dryRun: true }, callbackMock);
+
+      expect(existsSync('./tests')).toBeTruthy();
+      expect(output).toBeTruthy();
+      expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('=== dry-run ==='));
+      expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('would remove file: '));
+      expect(logSpy).toHaveBeenCalled();
+      expect(callbackMock).toHaveBeenCalled();
+    });
+
+    test('callback is executed after throwing when provided as last argument', () => {
+      const foo = touch('./tests/foo.txt');
+      const bar = touch('./tests/bar.txt');
+      const callbackMock = vi.fn();
+
+      expect(existsSync(foo)).toBeTruthy();
+      expect(existsSync(bar)).toBeTruthy();
+      expect(existsSync('./tests')).toBeTruthy();
+
+      removeSync({ files: undefined, dryRun: true }, callbackMock);
+
+      expect(callbackMock).toHaveBeenCalled();
     });
   });
 
   describe('glob patterns', () => {
+    afterEach(() => {
+      rmSync('tests', { recursive: true, force: true });
+    });
+
     test('remove single file using glob', () => {
       const foo = touch('./tests/foo.txt');
       const bar = touch('./tests/bar.txt');
@@ -155,14 +276,14 @@ describe('test remove-glob CLI', () => {
       expect(existsSync(foo)).toBeTruthy();
       expect(existsSync(bar)).toBeTruthy();
 
-      const out = removeSync([], { glob: '**/foo.txt' });
+      const out = removeSync({ files: [], glob: '**/foo.txt' });
       expect(out).toBeTypeOf('boolean');
       expect(out).toBeTruthy();
 
       expect(existsSync(foo)).toBeFalsy();
       expect(existsSync(bar)).toBeTruthy();
 
-      removeSync([], { glob: '**/bar.txt' }); // cleanup
+      removeSync({ files: '', glob: '**/bar.txt' }); // cleanup
       expect(existsSync(bar)).toBeFalsy();
     });
 
@@ -171,7 +292,7 @@ describe('test remove-glob CLI', () => {
       mkdirSync(str, { recursive: true });
       expect(existsSync(str)).toBeTruthy();
 
-      removeSync([], { glob: './tests/foo' });
+      removeSync({ glob: './tests/foo' });
       expect(existsSync(str)).toBeFalsy();
     });
 
@@ -180,13 +301,13 @@ describe('test remove-glob CLI', () => {
       const bar = dirname(foo);
       expect(existsSync(foo)).toBeTruthy();
 
-      const output = removeSync([], { glob: './tests/bar/foo.txt' });
+      const output = removeSync({ glob: './tests/bar/foo.txt' });
       expect(output).toBeTruthy();
 
       expect(existsSync(foo)).toBeFalsy();
       expect(existsSync(bar)).toBeTruthy();
 
-      removeSync([], { glob: dirname('./tests/bar/foo.txt') }); // cleanup
+      removeSync({ glob: dirname('./tests/bar/foo.txt') }); // cleanup
       expect(existsSync(bar)).toBeFalsy();
     });
 
@@ -197,7 +318,7 @@ describe('test remove-glob CLI', () => {
       expect(existsSync(dir)).toBeTruthy();
       expect(existsSync(file)).toBeTruthy();
 
-      const output = removeSync([], { glob: './tests/foo/**' });
+      const output = removeSync({ glob: './tests/foo/**' });
       expect(output).toBeTruthy();
 
       expect(existsSync(dir)).toBeFalsy();
@@ -213,7 +334,7 @@ describe('test remove-glob CLI', () => {
       expect(existsSync(file)).toBeTruthy();
       expect(existsSync(baz)).toBeTruthy();
 
-      const output = removeSync([], { glob: './tests/foo/bar/baz/bat/**' });
+      const output = removeSync({ glob: './tests/foo/bar/baz/bat/**' });
       expect(output).toBeTruthy();
 
       expect(existsSync(dir)).toBeFalsy();
@@ -221,7 +342,7 @@ describe('test remove-glob CLI', () => {
       expect(existsSync(baz)).toBeTruthy();
 
       const foo = resolve('./foo');
-      removeSync(foo);
+      removeSync({ files: foo });
       expect(existsSync(foo)).toBeFalsy();
     });
 
@@ -239,7 +360,7 @@ describe('test remove-glob CLI', () => {
       expect(existsSync(f3)).toBeTruthy();
       expect(existsSync(f4)).toBeTruthy();
 
-      const output = removeSync([], { glob: './tests/foo' });
+      const output = removeSync({ glob: './tests/foo' });
       expect(output).toBeTruthy();
 
       expect(existsSync(dir)).toBeFalsy();
@@ -250,10 +371,10 @@ describe('test remove-glob CLI', () => {
     });
 
     test('file does not exist using glob', async () => {
-      const file = removeSync([], { glob: './tests/404.txt' });
+      const file = removeSync({ glob: './tests/404.txt' });
       expect(file).toBeFalsy();
 
-      const dir = removeSync([], { glob: './tests/foo' });
+      const dir = removeSync({ glob: './tests/foo' });
       expect(dir).toBeFalsy();
     });
 
@@ -262,13 +383,65 @@ describe('test remove-glob CLI', () => {
       const dir = dirname(file);
 
       expect(existsSync(file)).toBeTruthy();
-      let output = removeSync([], { glob: 'hello.txt', cwd: dir });
+      let output = removeSync({ glob: 'hello.txt', cwd: dir });
       expect(output).toBeTruthy();
       expect(existsSync(file)).toBeFalsy();
 
-      output = removeSync([], { glob: './tests/foo/**' });
+      output = removeSync({ glob: './tests/foo/**' });
       expect(output).toBeTruthy();
       expect(existsSync(dir)).toBeFalsy();
+    });
+
+    test('dry-run option should log directories to be removed without actually removing them using glob', () => {
+      const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+
+      const str = resolve('./tests/foo');
+      mkdirSync(str, { recursive: true });
+      expect(existsSync(str)).toBeTruthy();
+
+      const output = removeSync({ glob: './tests/foo', dryRun: true });
+
+      expect(existsSync(str)).toBeTruthy();
+      expect(output).toBeTruthy();
+      expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('=== dry-run ==='));
+      expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('would remove directory: '));
+      expect(logSpy).toHaveBeenCalled();
+    });
+
+    test('dry-run option should log files to be removed without actually removing them using glob', () => {
+      const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+      const foo = touch('./tests/foo.txt');
+      const bar = touch('./tests/bar.txt');
+
+      expect(existsSync(foo)).toBeTruthy();
+      expect(existsSync(bar)).toBeTruthy();
+      expect(existsSync('./tests')).toBeTruthy();
+
+      const output = removeSync({ glob: './tests/*.txt', dryRun: true });
+
+      expect(existsSync('./tests')).toBeTruthy();
+      expect(output).toBeTruthy();
+      expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('=== dry-run ==='));
+      expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('would remove file: '));
+      expect(logSpy).toHaveBeenCalled();
+    });
+
+    test('verbose option should remove file and also log which are being removed using glob', () => {
+      const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+      const foo = touch('./tests/foo.txt');
+      const bar = touch('./tests/bar.txt');
+
+      expect(existsSync(foo)).toBeTruthy();
+      expect(existsSync(bar)).toBeTruthy();
+      expect(existsSync('./tests')).toBeTruthy();
+
+      const output = removeSync({ glob: './tests/*.txt', verbose: true });
+
+      expect(existsSync('./tests')).toBeTruthy();
+      expect(output).toBeTruthy();
+      expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('removing file: '));
+      expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('Removed:  2 items'));
+      expect(logSpy).toHaveBeenCalled();
     });
   });
 });
