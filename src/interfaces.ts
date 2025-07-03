@@ -12,7 +12,7 @@ export interface RemoveOptions {
   dryRun?: boolean;
 
   /** Glob pattern to find which files/directories to remove */
-  glob?: string;
+  glob?: string | string[];
 
   /**
    * The filepath(s) to remove – may be a file or a directory.

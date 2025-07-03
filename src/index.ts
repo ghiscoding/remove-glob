@@ -42,8 +42,8 @@ export function removeSync(opts: RemoveOptions = {}, callback?: (e?: Error) => v
     paths = paths.length ? [paths] : [];
   }
   const requiresCwdChange = !!(paths.length && opts.cwd);
-  if (!paths.length) {
-    paths = globSync([opts.glob!], { cwd: opts.cwd, dot: true, onlyFiles: false, absolute: true });
+  if (!paths.length && opts.glob) {
+    paths = globSync(opts.glob, { cwd: opts.cwd, dot: true, onlyFiles: false, absolute: true });
   }
   opts.stat && console.time('Duration');
   opts.dryRun && console.log('=== dry-run ===');
