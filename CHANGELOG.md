@@ -1,6 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.3.0](https://github.com/ghiscoding/remove-glob/compare/v0.2.0...v0.3.0) (2025-07-03)
+
+### Features
+
+* support one or more `--glob` patterns ([0612452](https://github.com/ghiscoding/remove-glob/commit/06124528e7e308aabbbb8ff998d870610f27629b))
+
 ## 0.2.0 (2025-07-03)
 
 ### Features
