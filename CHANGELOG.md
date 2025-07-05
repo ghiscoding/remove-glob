@@ -1,6 +1,13 @@
 # Change Log
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.3.1](https://github.com/ghiscoding/remove-glob/compare/v0.3.0...v0.3.1) (2025-07-05)
+
+### Bug Fixes
+
+* **deps:** update cli-nano to latest ([6317346](https://github.com/ghiscoding/remove-glob/commit/63173464c48a02fd60f13c35c21b7ed0f1cb2d7e))
+* use only declaration maps ([c3153da](https://github.com/ghiscoding/remove-glob/commit/c3153daf4537fc77d9c22d8021d81d6fe568eb66))
+
 ## [0.3.0](https://github.com/ghiscoding/remove-glob/compare/v0.2.0...v0.3.0) (2025-07-03)
 
 ### Features
