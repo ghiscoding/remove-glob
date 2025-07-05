@@ -64,6 +64,7 @@ try {
         description: 'If true, it will log each file or directory being removed',
       },
     },
+    helpDescLength: 75,
     version: readPackage().version,
   });
 
