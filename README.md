@@ -26,19 +26,17 @@ A `remove` binary is available, it takes 1 or more file/directory paths to be re
 Usage:
   remove [paths..] [options]  Remove all items recursively
 
-Positionals:
-  paths               directory or file paths to remove                                 [string]
+Arguments:
+  paths               directory or file paths to remove                                           [string..]
 
 Options:
-      --cwd           Directory to resolve from (default ".")                           [string]
-      --dryRun        Show which files/dirs would be deleted but without actually re... [boolean]
-      --glob          Glob pattern(s) to find which files/dirs to remove                [array]
-      --stat          Show the stats of the items being removed                         [boolean]
-      --verbose       If true, it will log each file or directory being removed         [boolean]
-
-Default options:
-  -h, --help          Show help                                                         [boolean]
-  -v, --version       Show version number                                               [boolean]
+      --cwd           Directory to resolve from (default ".")                                     [string]
+  -d, --dryRun        Show which files/dirs would be deleted but without actually removing them   [boolean]
+  -g, --glob          Glob pattern(s) to find which files/dirs to remove                          [array]
+  -s, --stat          Show the stats of the items being removed                                   [boolean]
+  -v, --verbose       If true, it will log each file or directory being removed                   [boolean]
+  -h, --help          Show help                                                                   [boolean]
+  -v, --version       Show version number                                                         [boolean]
 ```
 
 Remove files or directories.  Note: on Windows globs must be **double quoted**, everybody else can quote however they please.
