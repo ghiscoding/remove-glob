@@ -61,16 +61,12 @@ $ remove --glob \"dist/**/*.{js,map}\"
 import { resolve } from 'node:path';
 import { removeSync } from 'remove-glob';
 
-try {
-  // remove via paths
-  removeSync({ paths: './foobar' });
-  removeSync({ paths: ['./foo/file1.txt', './foo/file2.txt'] });
+// remove via paths
+removeSync({ paths: './foobar' });
+removeSync({ paths: ['./foo/file1.txt', './foo/file2.txt'] });
 
-  // or remove via glob pattern
-  removeSync({ glob: 'foo/**/*.txt' })
-} catch (err) {
-  //
-}
+// or remove via glob pattern
+removeSync({ glob: 'foo/**/*.txt' });
 
 // Using `cwd` option
 const dir = resolve('./foo/bar');
