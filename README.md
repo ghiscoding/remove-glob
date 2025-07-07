@@ -20,7 +20,11 @@ npm install remove-glob
 
 ### Command Line
 
-A `remove` binary is available, it takes 1 or more file/directory paths to be removed or any other options shown below (you can use an optional `--glob` pattern instead of paths).
+A `remove` binary is available, it takes an optional paths argument (zero or multiple file/directory paths) to be removed **or** a `--glob` pattern instead of paths.
+
+> [!NOTE]
+> The `paths` (argument) and `glob` (option) are both optional, but you **must** provide at least 1 of them.
+> However, providing both of them simultaneously is not supported (choose which option is best suited to your use case).
 
 ```
 Usage:
@@ -94,5 +98,5 @@ The first argument is an object holding any of the options shown below. The last
 }
 ```
 
-> [!WARNING]
-> The first argument is necessary and it **must** include a `paths` or a `glob` (but it cannot include both options together).
+> [!NOTE]
+> The first argument is required and it **must** include either a `paths` or a `glob`, but it cannot include both options simultaneously.
