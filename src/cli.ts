@@ -27,11 +27,20 @@ try {
   const config = {
     command: {
       name: 'remove',
-      description: 'Remove all items recursively',
+      describe: 'Remove all items recursively',
+      examples: [
+        { cmd: '$0 foo bar', describe: '→ Remove "foo" and "bar" folders' },
+        { cmd: '$0 --glob=\"dist/**/*.js\"', describe: '→ Remove all files from from "dist" folder with ".js" extension' },
+        {
+          cmd: '$0 --glob=\"dist/**/*.js\" --glob=\"packages/*/tsconfig.tsbuildinfo\"',
+          describe:
+            '→ Remove all files from from "dist" folder with ".js" extension and "tsconfig.tsbuildinfo" file from every "packages" folders',
+        },
+      ],
       positionals: [
         {
           name: 'paths',
-          description: 'directory or file paths to remove',
+          describe: 'Directory or file paths to remove',
           type: 'string',
           variadic: true,
           required: false,
@@ -41,30 +50,30 @@ try {
     options: {
       cwd: {
         type: 'string',
-        description: 'Directory to resolve from (default ".")',
+        describe: 'Directory to resolve from (default ".")',
       },
       dryRun: {
         alias: 'd',
         type: 'boolean',
         default: false,
-        description: 'Show which files/dirs would be deleted but without actually removing them',
+        describe: 'Show which files/dirs would be deleted but without actually removing them',
       },
       glob: {
         alias: 'g',
         type: 'array',
-        description: 'Glob pattern(s) to find which files/dirs to remove',
+        describe: 'Glob pattern(s) to find which files/dirs to remove',
       },
       stat: {
         alias: 's',
         default: false,
-        description: 'Show the stats of the items being removed',
+        describe: 'Show the stats of the items being removed',
         type: 'boolean',
       },
       verbose: {
         alias: 'v',
         type: 'boolean',
         default: false,
-        description: 'If true, it will log each file or directory being removed',
+        describe: 'If true, it will log each file or directory being removed',
       },
     },
     helpOptLength: 16,
