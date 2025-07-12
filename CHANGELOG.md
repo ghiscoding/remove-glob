@@ -1,6 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.3.4](https://github.com/ghiscoding/remove-glob/compare/v0.3.3...v0.3.4) (2025-07-12)
+
+### Bug Fixes
+
+* glob pattern should skip `node_modules` and `.git` folders ([02c2f8b](https://github.com/ghiscoding/remove-glob/commit/02c2f8b86bcdeec60e3e29f160c7845fab9408e7))
+
 ## [0.3.3](https://github.com/ghiscoding/remove-glob/compare/v0.3.2...v0.3.3) (2025-07-09)
 
 ### Bug Fixes
