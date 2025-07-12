@@ -59,6 +59,9 @@ $ remove foo bar
 $ remove --glob \"dist/**/*.{js,map}\"
 ```
 
+> [!NOTE]
+> When using the `--glob` option, it will skips `.git/` and `node_modules/` directories by default.
+
 ### Usage
 
 ```ts
