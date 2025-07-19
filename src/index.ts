@@ -70,7 +70,7 @@ export function removeSync(opts: RemoveOptions = {}, callback?: (e?: Error) => v
           readdirSync(path).forEach(name => {
             removeSync({ paths: join(path, name) }); // recursively remove content
           });
-          rmSync(path, { recursive: true, force: true });
+          rmSync(path, { recursive: true, force: true, maxRetries: process.platform === 'win32' ? 10 : 0 });
         }
       } else {
         // files
