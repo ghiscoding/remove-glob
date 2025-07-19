@@ -1,6 +1,6 @@
 {
   "name": "remove-glob",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "description": "A tiny utility to remove items or directories recursively, also supports glob",
   "bin": {
     "remove": "dist/cli.js"

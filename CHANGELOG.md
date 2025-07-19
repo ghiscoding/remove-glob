@@ -1,6 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.3.5](https://github.com/ghiscoding/remove-glob/compare/v0.3.4...v0.3.5) (2025-07-19)
+
+### Bug Fixes
+
+* add maxRetries to rmSync on Windows OS ([67527a0](https://github.com/ghiscoding/remove-glob/commit/67527a0e60303883b0f6ef87fadd8c5259d730f1))
+
 ## [0.3.4](https://github.com/ghiscoding/remove-glob/compare/v0.3.3...v0.3.4) (2025-07-12)
 
 ### Bug Fixes
