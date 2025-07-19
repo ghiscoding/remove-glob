@@ -76,8 +76,6 @@ try {
         describe: 'If true, it will log each file or directory being removed',
       },
     },
-    helpOptLength: 16,
-    helpDescLength: 73,
     version: readPackage().version,
   } as const;
 
