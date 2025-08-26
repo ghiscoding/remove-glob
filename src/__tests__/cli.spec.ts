@@ -31,10 +31,10 @@ describe('remove-glob', () => {
         writeFileSync('test-cli/a.txt', 'a');
         writeFileSync('test-cli/b.txt', 'b');
 
-        vi.spyOn(process, 'argv', 'get').mockReturnValueOnce(['node.exe', 'remove-glob/dist/cli.js', '--glob=\"test-cli/**\"']);
+        vi.spyOn(process, 'argv', 'get').mockReturnValueOnce(['node.exe', 'remove-glob/dist/cli.js', '--glob="test-cli/**"']);
 
         // Mock process.exit so it doesn't kill the test runner
-        // @ts-ignore
+        // @ts-expect-error
         const exitSpy = vi.spyOn(process, 'exit').mockImplementation((code?: string | number | null | undefined) => {
           if (code && code !== 0) {
             exitSpy.mockRestore();
