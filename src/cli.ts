@@ -30,9 +30,9 @@ try {
       describe: 'Remove all items recursively',
       examples: [
         { cmd: '$0 foo bar', describe: '→ Remove "foo" and "bar" folders' },
-        { cmd: '$0 --glob=\"dist/**/*.js\"', describe: '→ Remove all files from from "dist" folder with ".js" extension' },
+        { cmd: '$0 --glob="dist/**/*.js"', describe: '→ Remove all files from from "dist" folder with ".js" extension' },
         {
-          cmd: '$0 --glob=\"dist/**/*.js\" --glob=\"packages/*/tsconfig.tsbuildinfo\"',
+          cmd: '$0 --glob="dist/**/*.js" --glob="packages/*/tsconfig.tsbuildinfo"',
           describe:
             '→ Remove all files from from "dist" folder with ".js" extension and "tsconfig.tsbuildinfo" file from every "packages" folders',
         },
