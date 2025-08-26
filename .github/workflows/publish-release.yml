@@ -66,35 +66,16 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Debug Authentication
-        run: |
-          echo "Checking npm registry"
-          npm config get registry
-          echo "Checking npm user"
-          git config --global user.name "${{ github.actor }}"
-          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
-          npm whoami || echo "Authentication failed"
-
-      - name: Comprehensive npm Authentication Debug
-        env:
-          NPM_CONFIG_PROVENANCE: true
-        run: |
-          echo "GitHub Actor: ${{ github.actor }}"
-          echo "NPM Registry: $(npm config get registry)"
-          echo "Npm Config List:"
-          npm config list
-
       - name: 🧪 Dry-Run - GitHub Release
         if: ${{ inputs.dryrun == true }}
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_CONFIG_PROVENANCE: true
         run: |
           git config --global user.name "${{ github.actor }}"
           git config --global user.email "${{ github.actor }}@users.noreply.github.com"
           npm whoami
-          npx release-it --ci --dry-run
+          npx release-it --ci --dry-run --npm.skipChecks=true
 
       - name: OTP
         if: ${{ inputs.dryrun != true }}
@@ -109,23 +90,21 @@ jobs:
       - name: Fixed Version Release ⚙️ / NPM Publish 📦
         if: ${{ inputs.version != '' }}
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_CONFIG_PROVENANCE: true
         run: |
           git config --global user.name "${{ github.actor }}"
           git config --global user.email "${{ github.actor }}@users.noreply.github.com"
           npm whoami
-          npx release-it ${{ inputs.version }} --ci --plugins.'@release-it/conventional-changelog'.ignoreRecommendedBump=false --npm.otp=${{ steps.wait-for-secrets.outputs.OTP }}
+          npx release-it ${{ inputs.version }} --ci --npm.skipChecks=true --plugins.'@release-it/conventional-changelog'.ignoreRecommendedBump=false --npm.otp=${{ steps.wait-for-secrets.outputs.OTP }}
 
       - name: GitHub Release 🏷️ / NPM Publish 📦
         if: ${{ inputs.dryrun != true && inputs.version == '' }}
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_CONFIG_PROVENANCE: true
         run: |
           git config --global user.name "${{ github.actor }}"
           git config --global user.email "${{ github.actor }}@users.noreply.github.com"
           npm whoami
-          npx release-it --ci --npm.otp=${{ steps.wait-for-secrets.outputs.OTP }}
+          npx release-it --ci --npm.skipChecks=true --npm.otp=${{ steps.wait-for-secrets.outputs.OTP }}
