@@ -8,7 +8,6 @@
         "releaseName": "v${version}"
     },
     "npm": {
-        "publish": true,
         "skipChecks": true
     },
     "hooks": {
