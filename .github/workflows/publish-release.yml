@@ -73,7 +73,6 @@ jobs:
           echo "Checking npm user"
           git config --global user.name "${{ github.actor }}"
           git config --global user.email "${{ github.actor }}@users.noreply.github.com"
-          npm whoami || echo "Authentication failed"
 
       - name: 🧪 Dry-Run - GitHub Release
         if: ${{ inputs.dryrun == true }}
@@ -83,7 +82,6 @@ jobs:
         run: |
           git config --global user.name "${{ github.actor }}"
           git config --global user.email "${{ github.actor }}@users.noreply.github.com"
-          npm whoami
           npx release-it --ci --dry-run --npm.skipChecks=true
 
       - name: OTP
@@ -104,7 +102,6 @@ jobs:
         run: |
           git config --global user.name "${{ github.actor }}"
           git config --global user.email "${{ github.actor }}@users.noreply.github.com"
-          npm whoami
           npx release-it ${{ inputs.version }} --ci --npm.skipChecks=true --plugins.'@release-it/conventional-changelog'.ignoreRecommendedBump=false --npm.otp=${{ steps.wait-for-secrets.outputs.OTP }}
 
       - name: GitHub Release 🏷️ / NPM Publish 📦
@@ -115,5 +112,4 @@ jobs:
         run: |
           git config --global user.name "${{ github.actor }}"
           git config --global user.email "${{ github.actor }}@users.noreply.github.com"
-          npm whoami
           npx release-it --ci --npm.skipChecks=true --npm.otp=${{ steps.wait-for-secrets.outputs.OTP }}
