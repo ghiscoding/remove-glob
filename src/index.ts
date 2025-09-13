@@ -51,7 +51,9 @@ export function removeSync(opts: RemoveOptions = {}, callback?: (e?: Error) => v
       ignore: ['**/.git/**', '**/node_modules/**'],
     });
   }
-  opts.stat && console.time('Duration');
+  if (opts.stat || opts.verbose) {
+    console.time('Duration');
+  }
   opts.dryRun && console.log('=== dry-run ===');
 
   paths.forEach(path => {
