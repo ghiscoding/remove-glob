@@ -34,16 +34,17 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
 
+      - if: ${{ github.event.pull_request.merged != true && contains('["ghiscoding"]', github.actor) != true }}
+        name: Exit early when current actor is not allowed to push new release
+        run: |
+          echo "Error: Your GitHub username (${{ github.actor }}) is not on the allowed list of admins for this workflow"
+          exit 1
+
       - name: Set NodeJS
         uses: actions/setup-node@v4
         with:
           registry-url: 'https://registry.npmjs.org/'
           node-version: 22
-
-      # OIDC requires npm v11.5.1 or later (can probably with Node 24)
-      - run: npm install -g npm@latest
-      - run: node --version
-      - run: npm --version
 
       - name: Get npm cache directory path
         id: npm-cache-dir-path
@@ -60,19 +61,16 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Debug Authentication
-        run: |
-          echo "Checking npm registry"
-          npm config get registry
-          echo "Checking npm user"
-          git config --global user.name "${{ github.actor }}"
-          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
-
       - name: 🧪 Dry-Run - GitHub Release
         if: ${{ inputs.dryrun == true }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_CONFIG_PROVENANCE: true
         run: |
           git config --global user.name "${{ github.actor }}"
           git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+          npm whoami
           npx release-it --ci --dry-run
 
       - name: OTP
@@ -87,16 +85,24 @@ jobs:
 
       - name: Fixed Version Release ⚙️ / NPM Publish 📦
         if: ${{ inputs.version != '' }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_CONFIG_PROVENANCE: true
         run: |
           git config --global user.name "${{ github.actor }}"
           git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+          npm whoami
           npx release-it ${{ inputs.version }} --ci --plugins.'@release-it/conventional-changelog'.ignoreRecommendedBump=false --npm.otp=${{ steps.wait-for-secrets.outputs.OTP }}
 
       - name: GitHub Release 🏷️ / NPM Publish 📦
         if: ${{ inputs.dryrun != true && inputs.version == '' }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_CONFIG_PROVENANCE: true
         run: |
           git config --global user.name "${{ github.actor }}"
           git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+          npm whoami
           npx release-it --ci --npm.otp=${{ steps.wait-for-secrets.outputs.OTP }}
-        env:
-          NPM_TOKEN: ''
