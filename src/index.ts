@@ -32,7 +32,7 @@ export function removeSync(opts: RemoveOptions = {}, callback?: (e?: Error) => v
   }
   if (paths.length && opts.glob) {
     throwOrCallback(
-      new Error('Providing both `--paths` and `--glob` pattern are not supported, you must provide only one of these options.'),
+      new Error('Providing both `--paths` and `--glob` pattern at the same time is not supported, you must chose only one.'),
       cb,
     );
     return;
@@ -69,9 +69,6 @@ export function removeSync(opts: RemoveOptions = {}, callback?: (e?: Error) => v
           console.log(`would remove directory: ${path}`);
         } else {
           opts.verbose && console.log(`removing directory: ${path}`);
-          readdirSync(path).forEach(name => {
-            removeSync({ paths: join(path, name) }); // recursively remove content
-          });
           rmSync(path, { recursive: true, force: true, maxRetries: process.platform === 'win32' ? 10 : 0 });
         }
       } else {
@@ -92,6 +89,6 @@ export function removeSync(opts: RemoveOptions = {}, callback?: (e?: Error) => v
     console.timeEnd('Duration');
   }
   opts.dryRun && console.log('=== dry-run ===');
-  if (typeof cb === 'function') cb();
+  typeof cb === 'function' && cb();
   return pathExists;
 }
