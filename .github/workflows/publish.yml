@@ -37,7 +37,7 @@ jobs:
       - name: Set NodeJS
         uses: actions/setup-node@v4
         with:
-          registry-url: 'https://registry.npmjs.org'
+          registry-url: 'https://registry.npmjs.org/'
           node-version: 22
 
       # OIDC requires npm v11.5.1 or later (can probably with Node 24)
@@ -75,6 +75,16 @@ jobs:
           git config --global user.email "${{ github.actor }}@users.noreply.github.com"
           npx release-it --ci --dry-run
 
+      - name: OTP
+        if: ${{ inputs.dryrun != true }}
+        uses: step-security/wait-for-secrets@v1
+        id: wait-for-secrets
+        with:
+          secrets: |
+            OTP:
+              name: 'OTP to publish package'
+              description: 'OTP from authenticator app'
+
       - name: Fixed Version Release ⚙️ / NPM Publish 📦
         if: ${{ inputs.version != '' }}
         run: |
@@ -85,6 +95,6 @@ jobs:
       - name: GitHub Release 🏷️ / NPM Publish 📦
         if: ${{ inputs.dryrun != true && inputs.version == '' }}
         run: |
-          npx release-it --ci --npm.skipChecks
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          git config --global user.name "${{ github.actor }}"
+          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+          npx release-it --ci --npm.otp=${{ steps.wait-for-secrets.outputs.OTP }}
