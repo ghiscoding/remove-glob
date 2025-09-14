@@ -70,7 +70,6 @@ jobs:
         run: |
           git config --global user.name "${{ github.actor }}"
           git config --global user.email "${{ github.actor }}@users.noreply.github.com"
-          npm whoami
           npx release-it --ci --dry-run
 
       - name: OTP
@@ -90,7 +89,6 @@ jobs:
         run: |
           git config --global user.name "${{ github.actor }}"
           git config --global user.email "${{ github.actor }}@users.noreply.github.com"
-          npm whoami
           npx release-it ${{ inputs.version }} --ci --plugins.'@release-it/conventional-changelog'.ignoreRecommendedBump=false --npm.otp=${{ steps.wait-for-secrets.outputs.OTP }}
 
       - name: GitHub Release 🏷️ / NPM Publish 📦
@@ -100,5 +98,4 @@ jobs:
         run: |
           git config --global user.name "${{ github.actor }}"
           git config --global user.email "${{ github.actor }}@users.noreply.github.com"
-          npm whoami
           npx release-it --ci --npm.otp=${{ steps.wait-for-secrets.outputs.OTP }}
