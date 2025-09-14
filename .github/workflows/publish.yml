@@ -85,6 +85,6 @@ jobs:
       - name: GitHub Release 🏷️ / NPM Publish 📦
         if: ${{ inputs.dryrun != true && inputs.version == '' }}
         run: |
-          npx release-it --ci
+          npx release-it --ci --npm.skipChecks
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
