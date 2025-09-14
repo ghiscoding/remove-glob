@@ -44,7 +44,7 @@ describe('test remove-glob CLI', () => {
     expect(existsSync('./tests')).toBeTruthy();
 
     expect(() => removeSync({ paths: 'file1.txt', glob: 'dist/**' })).toThrow(
-      'Providing both `--paths` and `--glob` pattern are not supported, you must provide only one of these options.',
+      'Providing both `--paths` and `--glob` pattern at the same time is not supported, you must chose only one.',
     );
   });
 
