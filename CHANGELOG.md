@@ -1,6 +1,13 @@
 # Change Log
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.3.7](https://github.com/ghiscoding/remove-glob/compare/v0.3.6...v0.3.7) (2025-09-14)
+
+### Bug Fixes
+
+* duration time log should show in verbose ([99bc87e](https://github.com/ghiscoding/remove-glob/commit/99bc87e334bb4a7610371da399f151a885a2dbf7))
+* use rmSync only for sub-dir with resursive flag & not fall outside ([aa876e3](https://github.com/ghiscoding/remove-glob/commit/aa876e3bb96ee4824d9adbe7d454ec4f6d8423bd))
+
 ## [0.3.6](https://github.com/ghiscoding/remove-glob/compare/v0.3.5...v0.3.6) (2025-08-26)
 
 ### Bug Fixes
