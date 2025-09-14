@@ -1,5 +1,5 @@
-import { existsSync, readdirSync, rmSync, statSync, unlinkSync } from 'node:fs';
-import { join, resolve } from 'node:path';
+import { existsSync, rmSync, statSync, unlinkSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { globSync } from 'tinyglobby';
 
 import type { RemoveOptions } from './interfaces.js';
