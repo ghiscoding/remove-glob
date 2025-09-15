@@ -11,7 +11,7 @@
 
 A tiny cross-platform utility to remove items or directories recursively, it also accepts an optional glob pattern. There's also a CLI for easy, cross-platform usage. It uses 2 small dependencies [tinyglobby](https://www.npmjs.com/package/tinyglobby) for glob support and [cli-nano](https://www.npmjs.com/package/cli-nano) for the CLI.
 
-Inspired by [rimraf](https://www.npmjs.com/package/rimraf) and [premove](https://www.npmjs.com/package/premove) but also supports glob pattern to remove files or directories.
+Inspired by [rimraf](https://www.npmjs.com/package/rimraf) and [premove](https://www.npmjs.com/package/premove) but also supports glob pattern to remove multiple files or directories.
 
 ### Install
 ```sh
@@ -20,11 +20,11 @@ npm install remove-glob
 
 ### Command Line
 
-A `remove` binary is available, it takes an optional paths argument (zero or multiple file/directory paths) to be removed **or** a `--glob` pattern instead of paths.
+A `remove` binary is available, it takes an optional path argument (zero or multiple file/directory paths) to be removed **or** a `--glob` pattern instead of path(s).
 
 > [!NOTE]
-> The `paths` (argument) and `glob` (option) are both optional, but you **must** provide at least 1 of them.
-> However, providing both of them simultaneously is not supported (choose which option is best suited to your use case).
+> The `paths` and `glob` arguments are both optionals, but you **must** provide at least 1 of them.
+> However, please note that providing both of them simultaneously is not supported and will throw an error (choose the option that is best suited to your use case).
 
 ```
 Usage:
@@ -60,7 +60,7 @@ $ remove --glob \"dist/**/*.{js,map}\"
 ```
 
 > [!NOTE]
-> When using the `--glob` option, it will skips `.git/` and `node_modules/` directories by default.
+> When using the `--glob` option, it will by default skip `.git/` and `node_modules/` directories.
 
 ### Usage
 
@@ -88,16 +88,16 @@ import { removeSync } from 'remove-glob';
 removeSync(opt, callback);
 ```
 
-The first argument is an object holding any of the options shown below. The last argument is an optional callback function which is executed (when defined) after all files are removed.
+The first argument is an object holding any of the options shown below. The last argument is an optional callback function that will be executed after all files were removed.
 
 ```js
 {
-  cwd: string,              // directory to resolve your `filepath` from, defaults to `process.cwd()`
-  dryRun: bool,             // show what would be copied, without actually copying anything
-  paths: string | string[], // filepath(s) to remove – may be a file or a directory.
-  glob: string,             // glob pattern to find which files/directories to remove
-  stats: bool               // show some statistics after execution (time + file count)
-  verbose: bool,            // print more information to console when executing the removal
+  cwd: string;              // directory to resolve your `filepath` from, defaults to `process.cwd()`
+  dryRun: boolean;          // show what would be copied, without actually copying anything
+  paths: string | string[]; // filepath(s) to remove – may be a file or a directory.
+  glob: string;             // glob pattern to find which files/directories to remove
+  stats: boolean;           // show some statistics after execution (time + file count)
+  verbose: boolean;         // print more information to console when executing the removal
 }
 ```
 
