@@ -108,6 +108,6 @@ The first argument is an object holding any of the options shown below. The last
 
 I use it in most of my own open source projects as a Dev Dependency (feel free to modify this list and add your project(s) as well)
 
-[Lerna-Lite](https://github.com/lerna-lite/lerna-lite)
-[SlickGrid](https://github.com/6pac/SlickGrid)
-[Slickgrid-Universal](https://github.com/ghiscoding/slickgrid-universal)
+- [Lerna-Lite](https://github.com/lerna-lite/lerna-lite)
+- [SlickGrid](https://github.com/6pac/SlickGrid)
+- [Slickgrid-Universal](https://github.com/ghiscoding/slickgrid-universal)
