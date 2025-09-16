@@ -60,7 +60,7 @@ $ remove --glob \"dist/**/*.{js,map}\"
 ```
 
 > [!NOTE]
-> When using the `--glob` option, it will by default skip `.git/` and `node_modules/` directories.
+> When using the `--glob` option, it will skip `.git/` and `node_modules/` directories by default.
 
 ### Usage
 
