@@ -187,7 +187,7 @@ describe('test remove-glob CLI', () => {
 
       expect(existsSync(str)).toBeTruthy();
       expect(output).toBeTruthy();
-      expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('=== dry-run ==='));
+      expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('-- dry-run --'));
       expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('would remove directory: '));
       expect(logSpy).toHaveBeenCalled();
     });
@@ -205,7 +205,7 @@ describe('test remove-glob CLI', () => {
 
       expect(existsSync('./tests')).toBeTruthy();
       expect(output).toBeTruthy();
-      expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('=== dry-run ==='));
+      expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('-- dry-run --'));
       expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('would remove file: '));
       expect(logSpy).toHaveBeenCalled();
     });
@@ -243,7 +243,7 @@ describe('test remove-glob CLI', () => {
 
       expect(existsSync('./tests')).toBeTruthy();
       expect(output).toBeTruthy();
-      expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('=== dry-run ==='));
+      expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('-- dry-run --'));
       expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('would remove file: '));
       expect(logSpy).toHaveBeenCalled();
       expect(callbackMock).toHaveBeenCalled();
@@ -427,7 +427,7 @@ describe('test remove-glob CLI', () => {
 
       expect(existsSync(str)).toBeTruthy();
       expect(output).toBeTruthy();
-      expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('=== dry-run ==='));
+      expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('-- dry-run --'));
       expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('would remove directory: '));
       expect(logSpy).toHaveBeenCalled();
     });
@@ -445,7 +445,7 @@ describe('test remove-glob CLI', () => {
 
       expect(existsSync('./tests')).toBeTruthy();
       expect(output).toBeTruthy();
-      expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('=== dry-run ==='));
+      expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('-- dry-run --'));
       expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('would remove file: '));
       expect(logSpy).toHaveBeenCalled();
     });
