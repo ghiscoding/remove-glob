@@ -54,7 +54,8 @@ export function removeSync(opts: RemoveOptions = {}, callback?: (e?: Error) => v
   if (opts.stat || opts.verbose) {
     console.time('Duration');
   }
-  opts.dryRun && console.log('=== dry-run ===');
+  // start dry-run print
+  opts.dryRun && console.log('-- dry-run --');
 
   paths.forEach(path => {
     // do we need to resolve file/dir from a different cwd?
@@ -63,21 +64,17 @@ export function removeSync(opts: RemoveOptions = {}, callback?: (e?: Error) => v
     }
 
     if (existsSync(path)) {
-      if (statSync(path).isDirectory()) {
-        // directories
-        if (opts.dryRun) {
-          console.log(`would remove directory: ${path}`);
-        } else {
-          opts.verbose && console.log(`removing directory: ${path}`);
-          rmSync(path, { recursive: true, force: true, maxRetries: process.platform === 'win32' ? 10 : 0 });
-        }
+      const isDir = statSync(path).isDirectory();
+      const pathLog = `${isDir ? 'directory' : 'file'}: ${path}`;
+
+      if (opts.dryRun) {
+        console.log(`would remove ${pathLog}`);
       } else {
-        // files
-        if (opts.dryRun) {
-          console.log(`would remove file: ${path}`);
+        opts.verbose && console.log(`removing ${pathLog}`);
+        if (isDir) {
+          rmSync(path, { recursive: true, force: true, maxRetries: process.platform === 'win32' ? 10 : 0 }); // delete folder recursively
         } else {
-          opts.verbose && console.log(`removing file: ${path}`);
-          unlinkSync(path);
+          unlinkSync(path); // delete file
         }
       }
       pathExists = true;
@@ -88,7 +85,9 @@ export function removeSync(opts: RemoveOptions = {}, callback?: (e?: Error) => v
     console.log(`Removed:  ${paths.length} items`);
     console.timeEnd('Duration');
   }
-  opts.dryRun && console.log('=== dry-run ===');
+
+  // end dry-run print & execute callback when defined
+  opts.dryRun && console.log('-- end --');
   typeof cb === 'function' && cb();
   return pathExists;
 }
