@@ -1,6 +1,16 @@
 # Change Log
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.4.0](https://github.com/ghiscoding/remove-glob/compare/v0.3.7...v0.4.0) (2025-09-17)
+
+### Features
+
+* refactor and simplify code ([cbc089a](https://github.com/ghiscoding/remove-glob/commit/cbc089a4d02c70601f47b2b420e934dd08ea3e5c))
+
+### Bug Fixes
+
+* **deps:** update all dependencies ([fac06bf](https://github.com/ghiscoding/remove-glob/commit/fac06bf9a8e87aa83d0f0b9928d4acf612e5e9c1))
+
 ## [0.3.7](https://github.com/ghiscoding/remove-glob/compare/v0.3.6...v0.3.7) (2025-09-14)
 
 ### Bug Fixes
