@@ -1,6 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.4.3](https://github.com/ghiscoding/remove-glob/compare/v0.4.2...v0.4.3) (2025-09-25)
+
+### Bug Fixes
+
+* always publish release on github ([203cf31](https://github.com/ghiscoding/remove-glob/commit/203cf3149149266f10c3e5ca71964268c9aab568))
+
 ## [0.4.2](https://github.com/ghiscoding/remove-glob/compare/v0.4.0...v0.4.2) (2025-09-25)
 
 ### Bug Fixes
