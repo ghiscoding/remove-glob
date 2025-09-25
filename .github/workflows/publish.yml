@@ -44,7 +44,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           registry-url: 'https://registry.npmjs.org/'
-          node-version: 22
+          node-version: 24
 
       - name: Get npm cache directory path
         id: npm-cache-dir-path
@@ -63,34 +63,12 @@ jobs:
 
       - name: 🧪 Dry-Run - GitHub Release
         if: ${{ inputs.dryrun == true }}
-        run: |
-          git config --global user.name "${{ github.actor }}"
-          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
-          npm whoami
-          npx release-it --ci --dry-run
-
-      - name: OTP
-        if: ${{ inputs.dryrun != true }}
-        uses: step-security/wait-for-secrets@v1
-        id: wait-for-secrets
-        with:
-          secrets: |
-            OTP:
-              name: 'OTP to publish package'
-              description: 'OTP from authenticator app'
+        run: npx release-it --ci --dry-run
 
       - name: Fixed Version Release ⚙️ / NPM Publish 📦
         if: ${{ inputs.version != '' }}
-        run: |
-          git config --global user.name "${{ github.actor }}"
-          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
-          npm whoami
-          npx release-it ${{ inputs.version }} --ci --plugins.'@release-it/conventional-changelog'.ignoreRecommendedBump=false
+        run: npx release-it ${{ inputs.version }} --ci --plugins.'@release-it/conventional-changelog'.ignoreRecommendedBump=false
 
       - name: GitHub Release 🏷️ / NPM Publish 📦
         if: ${{ inputs.dryrun != true && inputs.version == '' }}
-        run: |
-          git config --global user.name "${{ github.actor }}"
-          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
-          npm whoami
-          npx release-it --ci
+        run: npx release-it --ci
