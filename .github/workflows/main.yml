@@ -16,11 +16,6 @@ jobs:
     name: Node ${{ matrix.node }}
     runs-on: ubuntu-latest
 
-    strategy:
-      fail-fast: false
-      matrix:
-        node: [22]
-
     steps:
       - name: Clone repository
         uses: actions/checkout@v4
@@ -37,7 +32,7 @@ jobs:
       - name: Set Node.js version
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node }}
+          node-version: 24
 
       - run: node --version
       - run: npm --version
