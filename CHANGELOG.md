@@ -1,6 +1,13 @@
 # Change Log
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.4.2](https://github.com/ghiscoding/remove-glob/compare/v0.4.0...v0.4.2) (2025-09-25)
+
+### Bug Fixes
+
+* publish release with OIDC ([826561c](https://github.com/ghiscoding/remove-glob/commit/826561caded6511d15056dd49b20e7d8ecfa5c23))
+* publish release with OIDC ([f4d82bb](https://github.com/ghiscoding/remove-glob/commit/f4d82bbaff9df362a90ddc32ff66ad8a0400da9e))
+
 ## [0.4.0](https://github.com/ghiscoding/remove-glob/compare/v0.3.7...v0.4.0) (2025-09-17)
 
 ### Features
