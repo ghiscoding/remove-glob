@@ -1,7 +1,7 @@
 import { existsSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { afterAll, afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 
-import { removeSync } from '../index.js';
+import { removeSync } from '../index.ts';
 
 function cleanupFolders() {
   try {
@@ -43,7 +43,7 @@ describe('remove-glob', () => {
           // Do nothing for code 0
         });
 
-        import('../cli.js')
+        import('../cli.ts')
           .then(() => {
             // Wait until test-cli exists, then check files
             const start = Date.now();

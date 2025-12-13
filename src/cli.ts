@@ -5,7 +5,8 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'cli-nano';
 
-import { removeSync } from './index.js';
+// @ts-expect-error
+import { removeSync } from './index.ts';
 
 function readPackage() {
   const __dirname = dirname(fileURLToPath(import.meta.url));

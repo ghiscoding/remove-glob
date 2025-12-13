@@ -2,7 +2,7 @@ import { existsSync, rmSync, statSync, unlinkSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { globSync } from 'tinyglobby';
 
-import type { RemoveOptions } from './interfaces.js';
+import type { RemoveOptions } from './interfaces.ts';
 
 /** Helper to throw or callback with error */
 function throwOrCallback(err?: Error, cb?: (e?: Error) => void) {
