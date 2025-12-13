@@ -2,7 +2,7 @@ import { existsSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { afterEach, describe, expect, test, vi } from 'vitest';
 
-import { removeSync } from '../index.js';
+import { removeSync } from '../index.ts';
 
 function touch(str: string): string {
   const dir = dirname((str = resolve(str)));
