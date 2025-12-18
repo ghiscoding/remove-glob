@@ -71,7 +71,7 @@ try {
         type: 'boolean',
       },
       verbose: {
-        alias: 'v',
+        alias: 'V',
         type: 'boolean',
         default: false,
         describe: 'If true, it will log each file or directory being removed',

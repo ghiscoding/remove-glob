@@ -38,7 +38,7 @@ Options:
   -d, --dryRun    Show which files/dirs would be deleted but without actually removing them [boolean]
   -g, --glob      Glob pattern(s) to find which files/dirs to remove                        [array]
   -s, --stat      Show the stats of the items being removed                                 [boolean]
-  -v, --verbose   If true, it will log each file or directory being removed                 [boolean]
+  -V, --verbose   If true, it will log each file or directory being removed                 [boolean]
   -h, --help      Show help                                                                 [boolean]
   -v, --version   Show version number                                                       [boolean]
 ```
