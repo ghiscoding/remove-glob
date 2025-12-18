@@ -1,3 +1,14 @@
+# Change Log 
+
+All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+
+## [0.4.6](https://github.com/ghiscoding/remove-glob/compare/v0.4.4...v0.4.6) (2025-12-18)
+
+### Bug Fixes
+
+* **deps:** update all non-major dependencies ([7c841e1](https://github.com/ghiscoding/remove-glob/commit/7c841e13ebd2ed43f95a52313bcffa20a5236207))
+* use -V for verbose flag to avoid duplicate flag usage ([3ac70c3](https://github.com/ghiscoding/remove-glob/commit/3ac70c3153c4a67cebb7080eae0d017b348eaada))
+
 # Change Log
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
