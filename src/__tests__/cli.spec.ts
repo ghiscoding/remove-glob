@@ -1,7 +1,7 @@
 import { existsSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { afterAll, afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 
-import { removeSync } from '../index.ts';
+import { removeSync } from '../index.js';
 
 function cleanupFolders() {
   try {
