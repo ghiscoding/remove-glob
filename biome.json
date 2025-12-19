@@ -59,9 +59,9 @@
         "rules": {
             "correctness": {
                 "useImportExtensions": {
-                  "options": {
-                    "forceJsExtensions": true
-                  }
+                    "options": {
+                        "forceJsExtensions": true
+                    }
                 }
             },
             "recommended": true,
