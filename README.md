@@ -9,9 +9,12 @@
 
 ## remove-glob
 
-A tiny cross-platform utility to remove items or directories recursively, it also accepts an optional glob pattern. There's also a CLI for easy, cross-platform usage. It uses 2 small dependencies [tinyglobby](https://www.npmjs.com/package/tinyglobby) for glob support and [cli-nano](https://www.npmjs.com/package/cli-nano) for the CLI.
+A tiny cross-platform utility to remove items or directories recursively, it also accepts an optional glob pattern. There's also a CLI for easy, cross-platform usage using [cli-nano](https://www.npmjs.com/package/cli-nano) which is the only external dependency.
 
 Inspired by [rimraf](https://www.npmjs.com/package/rimraf) and [premove](https://www.npmjs.com/package/premove) but also supports glob pattern to remove multiple files or directories.
+
+> [!NOTE]
+> This project now requires Node.JS >= 22.17.0 so that we can use the native `fs.glob`, however if you can't update your Node.JS just yet, then just stick with `remove-glob: ^0.4.10` since that is the only change in v1.0.0
 
 ### Install
 ```sh
@@ -25,6 +28,9 @@ A `remove` binary is available, it takes an optional path argument (zero or mult
 > [!NOTE]
 > The `paths` and `glob` arguments are both optionals, but you **must** provide at least 1 of them.
 > However, please note that providing both of them simultaneously is not supported and will throw an error (choose the option that is best suited to your use case).
+
+> [!NOTE]
+> When using the `--glob` option, dotfiles and dot-directories (e.g. `.env`, `.gitignore`, `.config/`) are included by default. If you want to exclude them, you can adjust your glob pattern (e.g. use `**/[!.]*.js` or add an `!**/.*` pattern).
 
 ```
 Usage:

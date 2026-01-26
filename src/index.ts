@@ -1,17 +1,7 @@
-import { existsSync, rmSync, statSync, unlinkSync } from 'node:fs';
+import { existsSync, globSync, rmSync, statSync, unlinkSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { globSync } from 'tinyglobby';
-
 import type { RemoveOptions } from './interfaces.js';
-
-/** Helper to throw or callback with error */
-function throwOrCallback(err?: Error, cb?: (e?: Error) => void) {
-  if (typeof cb === 'function') {
-    cb(err);
-  } else {
-    throw err;
-  }
-}
+import { throwOrCallback } from './utils.js';
 
 /**
  * Remove the files or directories, the item(s) can be provided via positional arguments or via a `--glob` pattern.
@@ -43,13 +33,13 @@ export function removeSync(opts: RemoveOptions = {}, callback?: (e?: Error) => v
   }
   const requiresCwdChange = !!(paths.length && opts.cwd);
   if (!paths.length && opts.glob) {
-    paths = globSync(opts.glob, {
-      cwd: opts.cwd,
-      dot: true,
-      onlyFiles: false,
-      absolute: true,
-      ignore: ['**/.git/**', '**/node_modules/**'],
-    });
+    // Use fs.globSync to match files. Dotfiles and dot-directories are always included.
+    paths = globSync(opts.glob, { cwd: opts.cwd });
+
+    // Manually resolve to absolute paths if cwd is set
+    if (opts.cwd) {
+      paths = paths.map(p => resolve(opts.cwd as string, p));
+    }
   }
   if (opts.stat || opts.verbose) {
     console.time('Duration');
