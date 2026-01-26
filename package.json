@@ -57,12 +57,12 @@
     "cli-nano": "^1.2.2"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.3.11",
+    "@biomejs/biome": "^2.3.13",
     "@release-it/conventional-changelog": "^10.0.4",
     "@types/node": "^25.0.10",
     "@types/picomatch": "^4.0.2",
     "@vitest/coverage-v8": "^4.0.18",
-    "release-it": "^19.2.3",
+    "release-it": "^19.2.4",
     "typescript": "^5.9.3",
     "vitest": "^4.0.18"
   },
