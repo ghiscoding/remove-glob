@@ -1,6 +1,16 @@
 # Change Log 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.0](https://github.com/ghiscoding/remove-glob/compare/v0.4.10...v1.0.0) (2026-01-26)
+
+### ⚠ BREAKING CHANGES
+
+* drop `tinyglobby` and use native `fs.glob`
+
+### Features
+
+* drop `tinyglobby` and use native `fs.glob` ([60e5228](https://github.com/ghiscoding/remove-glob/commit/60e522887b0975ef23340c61a2d509f4a9e2c6ac))
+
 ## [0.4.10](https://github.com/ghiscoding/remove-glob/compare/v0.4.9...v0.4.10) (2025-12-19)
 
 ### Bug Fixes
