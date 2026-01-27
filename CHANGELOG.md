@@ -1,6 +1,12 @@
 # Change Log 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.0](https://github.com/ghiscoding/remove-glob/compare/v1.0.0...v1.1.0) (2026-01-27)
+
+### Features
+
+* add `exclude`  option and default to `.git`,`node_modules` folders ([aef792f](https://github.com/ghiscoding/remove-glob/commit/aef792f861b6569c2e7903d96b0a5336ca2d4f49))
+
 ## [1.0.0](https://github.com/ghiscoding/remove-glob/compare/v0.4.10...v1.0.0) (2026-01-26)
 
 ### ⚠ BREAKING CHANGES
