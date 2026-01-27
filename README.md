@@ -2,10 +2,12 @@
 [![TypeScript](https://img.shields.io/badge/%3C%2F%3E-TypeScript-%230074c1.svg)](http://www.typescriptlang.org/)
 [![Vitest](https://img.shields.io/badge/tested%20with-vitest-fcc72b.svg?logo=vitest)](https://vitest.dev/)
 [![codecov](https://codecov.io/gh/ghiscoding/remove-glob/branch/main/graph/badge.svg)](https://codecov.io/gh/ghiscoding/remove-glob)
+<a href="https://nodejs.org/en/about/previous-releases"><img src="https://img.shields.io/node/v/remove-glob.svg" alt="Node" /></a>
+
 [![npm](https://img.shields.io/npm/v/remove-glob.svg)](https://www.npmjs.com/package/remove-glob)
 [![npm](https://img.shields.io/npm/dy/remove-glob)](https://www.npmjs.com/package/remove-glob)
-[![npm bundle size](https://img.shields.io/bundlephobia/minzip/remove-glob?color=success&label=gzip)](https://bundlephobia.com/result?p=remove-glob)
-<a href="https://nodejs.org/en/about/previous-releases"><img src="https://img.shields.io/node/v/remove-glob.svg" alt="Node" /></a>
+[![npm bundle size](https://img.shields.io/badge/gzip-1.05kB-success)](https://bundlejs.com/?q=remove-glob)
+
 
 ## remove-glob
 
