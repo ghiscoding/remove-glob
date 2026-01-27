@@ -1,6 +1,12 @@
 # Change Log 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.1](https://github.com/ghiscoding/remove-glob/compare/v1.1.0...v1.1.1) (2026-01-27)
+
+### Bug Fixes
+
+* add missing `-e` short CLI alias for exclude option ([180c34f](https://github.com/ghiscoding/remove-glob/commit/180c34f381a73fc9ebb5244127fa636d9f277fc1))
+
 ## [1.1.0](https://github.com/ghiscoding/remove-glob/compare/v1.0.0...v1.1.0) (2026-01-27)
 
 ### Features
