@@ -1,3 +1,4 @@
+import type { GlobOptions } from 'node:fs';
 import { existsSync, globSync, rmSync, statSync, unlinkSync } from 'node:fs';
 import { resolve } from 'node:path';
 import type { RemoveOptions } from './interfaces.js';
@@ -10,37 +11,45 @@ import { throwOrCallback } from './utils.js';
  */
 export function removeSync(opts: RemoveOptions = {}, callback?: (e?: Error) => void) {
   const cb = callback || opts.callback;
-  let paths = opts.paths || [];
+  let paths: string[] = [];
+  if (typeof opts.paths === 'string' && opts.paths.length > 0) {
+    paths = [opts.paths];
+  } else if (Array.isArray(opts.paths)) {
+    paths = opts.paths.filter(p => typeof p === 'string' && p.length > 0);
+  }
+
+  let errorMsg = '';
   if (!paths.length && !opts.glob) {
-    throwOrCallback(
-      new Error(
-        'Please make sure to provide file paths via command arguments or via `--glob` pattern, i.e.: "remove dir" or "remove --glob dir/**/*.js"',
-      ),
-      cb,
-    );
+    errorMsg =
+      'Please make sure to provide file paths via command arguments or via `--glob` pattern, i.e.: "remove dir" or "remove --glob dir/**/*.js"';
+  } else if (paths.length > 0 && opts.glob) {
+    errorMsg = 'Providing both `--paths` and `--glob` pattern at the same time is not supported, you must chose only one.';
+  }
+
+  if (errorMsg) {
+    throwOrCallback(new Error(errorMsg), cb);
     return;
   }
-  if (paths.length && opts.glob) {
-    throwOrCallback(
-      new Error('Providing both `--paths` and `--glob` pattern at the same time is not supported, you must chose only one.'),
-      cb,
-    );
-    return;
-  }
+
   let pathExists = false;
-  if (!Array.isArray(paths)) {
-    paths = paths.length ? [paths] : [];
-  }
+  // paths is always an array now
   const requiresCwdChange = !!(paths.length && opts.cwd);
   if (!paths.length && opts.glob) {
     // Use fs.globSync to match files. Dotfiles and dot-directories are always included.
-    paths = globSync(opts.glob, { cwd: opts.cwd });
+    const defaultExclude = ['**/.git/**', '**/.git', '**/node_modules/**', '**/node_modules'];
+    const globOptions: GlobOptions = { cwd: opts.cwd, withFileTypes: false };
+    globOptions.exclude = Array.isArray(opts.exclude) ? opts.exclude : defaultExclude;
 
-    // Manually resolve to absolute paths if cwd is set
+    const globResult = globSync(opts.glob, globOptions);
+    // We reassign 'paths' here to hold the final list of files matched by glob,
+    // after filtering for strings and resolving to absolute paths if needed.
+    paths =
+      Array.isArray(globResult) && globResult.length > 0 ? (globResult as unknown[]).filter((v): v is string => typeof v === 'string') : [];
     if (opts.cwd) {
       paths = paths.map(p => resolve(opts.cwd as string, p));
     }
   }
+
   if (opts.stat || opts.verbose) {
     console.time('Duration');
   }

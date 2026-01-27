@@ -40,11 +40,12 @@ Arguments:
   paths           directory or file paths to remove                                         [string..]
 
 Options:
-      --cwd       Directory to resolve from (default ".")                                   [string]
+    --cwd       Directory to resolve from (default ".")                                   [string]
   -d, --dryRun    Show which files/dirs would be deleted but without actually removing them [boolean]
   -g, --glob      Glob pattern(s) to find which files/dirs to remove                        [array]
   -s, --stat      Show the stats of the items being removed                                 [boolean]
   -V, --verbose   If true, it will log each file or directory being removed                 [boolean]
+    --exclude    Glob pattern(s) to exclude from deletion (overrides the default: ["**/.git/**", "**/.git", "**/node_modules/**", "**/node_modules"]) [array]
   -h, --help      Show help                                                                 [boolean]
   -v, --version   Show version number                                                       [boolean]
 ```
@@ -66,7 +67,15 @@ $ remove --glob \"dist/**/*.{js,map}\"
 ```
 
 > [!NOTE]
-> When using the `--glob` option, it will skip `.git/` and `node_modules/` directories by default.
+> When using the `--glob` option, it will skip `.git/` and `node_modules/` directories by default (using the default `--exclude` patterns).
+> If you want to allow deletion of these directories, you can override the default by providing your own `--exclude` option (including an empty array to disable exclusion):
+>
+> ```sh
+> # Remove everything, including .git and node_modules
+> $ npx remove --glob "**/*" --exclude ""
+> # Or exclude only .git, but allow node_modules to be deleted
+> $ npx remove --glob "**/*" --exclude "**/.git/**" --exclude "**/.git"
+> ```
 
 ### Usage
 
@@ -102,6 +111,7 @@ The first argument is an object holding any of the options shown below. The last
   dryRun: boolean;          // show what would be copied, without actually copying anything
   paths: string | string[]; // filepath(s) to remove – may be a file or a directory.
   glob: string;             // glob pattern to find which files/directories to remove
+  exclude: string[];        // glob pattern(s) to exclude from deletion (default: ["**/.git/**", "**/.git", "**/node_modules/**", "**/node_modules"])
   stats: boolean;           // show some statistics after execution (time + file count)
   verbose: boolean;         // print more information to console when executing the removal
 }

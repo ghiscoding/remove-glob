@@ -75,6 +75,11 @@ try {
         default: false,
         describe: 'If true, it will log each file or directory being removed',
       },
+      exclude: {
+        type: 'array',
+        describe:
+          'Glob pattern(s) to exclude from deletion (overrides the default: ["**/.git/**", "**/.git", "**/node_modules/**", "**/node_modules"])',
+      },
     },
     version: readPackage().version,
   } as const;

@@ -91,7 +91,7 @@ describe('test remove-glob CLI', () => {
       expect(existsSync(foo)).toBeFalsy();
       expect(existsSync(bar)).toBeTruthy();
 
-      removeSync({ paths: bar }); // cleanup
+      removeSync({ glob: dirname('./tests/bar/foo.txt') }); // cleanup
       expect(existsSync(bar)).toBeFalsy();
     });
 
@@ -466,6 +466,48 @@ describe('test remove-glob CLI', () => {
       expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('removing file: '));
       expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('Removed:  2 items'));
       expect(logSpy).toHaveBeenCalled();
+    });
+
+    test('should ignore .git and node_modules when using glob', () => {
+      // Setup test structure
+      mkdirSync('tests', { recursive: true });
+      mkdirSync('tests/.git', { recursive: true });
+      mkdirSync('tests/node_modules', { recursive: true });
+      const foo = touch('tests/foo.txt');
+      const gitFile = touch('tests/.git/hidden.txt');
+      const nodeFile = touch('tests/node_modules/dep.txt');
+
+      expect(existsSync(foo)).toBeTruthy();
+      expect(existsSync(gitFile)).toBeTruthy();
+      expect(existsSync(nodeFile)).toBeTruthy();
+
+      removeSync({ glob: 'tests/**/*' });
+
+      // .git and node_modules should still exist
+      expect(existsSync('tests/.git/hidden.txt')).toBe(true);
+      expect(existsSync('tests/node_modules/dep.txt')).toBe(true);
+      // foo.txt should be removed
+      expect(existsSync('tests/foo.txt')).toBe(false);
+    });
+
+    test('handles unexpected glob result type for coverage', async () => {
+      vi.doMock('../glob-wrapper.js', () => ({
+        globSyncWrapper: () => [123, 456],
+      }));
+      const { removeSync } = await import('../index.js');
+      const result = removeSync({ glob: 'tests/should-not-match-anything' });
+      expect(result).toBe(false);
+      vi.resetModules();
+    });
+
+    test('handles glob result with non-string, non-object type for full branch coverage', async () => {
+      vi.doMock('../glob-wrapper.js', () => ({
+        globSyncWrapper: () => [true],
+      }));
+      const { removeSync } = await import('../index.js');
+      const result = removeSync({ glob: 'tests/should-not-match-anything' });
+      expect(result).toBe(false);
+      vi.resetModules();
     });
   });
 });
