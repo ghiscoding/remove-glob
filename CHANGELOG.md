@@ -1,6 +1,12 @@
 # Change Log 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.0](https://github.com/ghiscoding/remove-glob/compare/v1.1.1...v1.2.0) (2026-01-27)
+
+### Features
+
+* add `--all` option & support more complex glob brace expansion ([bcaf7e6](https://github.com/ghiscoding/remove-glob/commit/bcaf7e641b4bdb65da9085ce064e3b3ab363f153))
+
 ## [1.1.1](https://github.com/ghiscoding/remove-glob/compare/v1.1.0...v1.1.1) (2026-01-27)
 
 ### Bug Fixes
