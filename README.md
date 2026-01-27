@@ -40,12 +40,12 @@ Arguments:
   paths           directory or file paths to remove                                         [string..]
 
 Options:
-    --cwd       Directory to resolve from (default ".")                                   [string]
+      --cwd       Directory to resolve from (default ".")                                   [string]
   -d, --dryRun    Show which files/dirs would be deleted but without actually removing them [boolean]
   -g, --glob      Glob pattern(s) to find which files/dirs to remove                        [array]
   -s, --stat      Show the stats of the items being removed                                 [boolean]
   -V, --verbose   If true, it will log each file or directory being removed                 [boolean]
-    --exclude    Glob pattern(s) to exclude from deletion (overrides the default: ["**/.git/**", "**/.git", "**/node_modules/**", "**/node_modules"]) [array]
+      --exclude    Glob pattern(s) to exclude from deletion (overrides the default: ["**/.git/**", "**/.git", "**/node_modules/**", "**/node_modules"]) [array]
   -h, --help      Show help                                                                 [boolean]
   -v, --version   Show version number                                                       [boolean]
 ```
