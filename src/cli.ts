@@ -29,12 +29,12 @@ try {
       name: 'remove',
       describe: 'Remove all items recursively',
       examples: [
-        { cmd: '$0 foo bar', describe: '→ Remove "foo" and "bar" folders' },
-        { cmd: '$0 --glob="dist/**/*.js"', describe: '→ Remove all files from from "dist" folder with ".js" extension' },
+        { cmd: '$0 foo bar', describe: 'Remove "foo" and "bar" folders' },
+        { cmd: '$0 --glob="dist/**/*.js"', describe: 'Remove all files from from "dist" folder with ".js" extension' },
         {
           cmd: '$0 --glob="dist/**/*.js" --glob="packages/*/tsconfig.tsbuildinfo"',
           describe:
-            '→ Remove all files from from "dist" folder with ".js" extension and "tsconfig.tsbuildinfo" file from every "packages" folders',
+            'Remove all files from from "dist" folder with ".js" extension and "tsconfig.tsbuildinfo" file from every "packages" folders',
         },
       ],
       positionals: [
@@ -62,6 +62,12 @@ try {
         alias: 'g',
         type: 'array',
         describe: 'Glob pattern(s) to find which files/dirs to remove',
+      },
+      all: {
+        alias: 'a',
+        type: 'boolean',
+        default: false,
+        describe: 'Include dotfiles (files starting with a dot) when matching glob patterns',
       },
       stat: {
         alias: 's',

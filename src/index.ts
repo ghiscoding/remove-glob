@@ -1,8 +1,7 @@
-import type { GlobOptions } from 'node:fs';
-import { existsSync, globSync, rmSync, statSync, unlinkSync } from 'node:fs';
+import { existsSync, rmSync, statSync, unlinkSync } from 'node:fs';
 import { resolve } from 'node:path';
 import type { RemoveOptions } from './interfaces.js';
-import { throwOrCallback } from './utils.js';
+import { throwOrCallback, getMatchedFiles } from './utils.js';
 
 /**
  * Remove the files or directories, the item(s) can be provided via positional arguments or via a `--glob` pattern.
@@ -35,19 +34,7 @@ export function removeSync(opts: RemoveOptions = {}, callback?: (e?: Error) => v
   // paths is always an array now
   const requiresCwdChange = !!(paths.length && opts.cwd);
   if (!paths.length && opts.glob) {
-    // Use fs.globSync to match files. Dotfiles and dot-directories are always included.
-    const defaultExclude = ['**/.git/**', '**/.git', '**/node_modules/**', '**/node_modules'];
-    const globOptions: GlobOptions = { cwd: opts.cwd, withFileTypes: false };
-    globOptions.exclude = Array.isArray(opts.exclude) ? opts.exclude : defaultExclude;
-
-    const globResult = globSync(opts.glob, globOptions);
-    // We reassign 'paths' here to hold the final list of files matched by glob,
-    // after filtering for strings and resolving to absolute paths if needed.
-    paths =
-      Array.isArray(globResult) && globResult.length > 0 ? (globResult as unknown[]).filter((v): v is string => typeof v === 'string') : [];
-    if (opts.cwd) {
-      paths = paths.map(p => resolve(opts.cwd as string, p));
-    }
+    paths = getMatchedFiles(opts.glob, { cwd: opts.cwd, exclude: opts.exclude, all: opts.all });
   }
 
   if (opts.stat || opts.verbose) {
@@ -64,7 +51,7 @@ export function removeSync(opts: RemoveOptions = {}, callback?: (e?: Error) => v
 
     if (existsSync(path)) {
       const isDir = statSync(path).isDirectory();
-      const pathLog = `${isDir ? 'directory' : 'file'}: ${path}`;
+      const pathLog = `${isDir ? 'directory recursively' : 'file'}: ${path}`;
 
       if (opts.dryRun) {
         console.log(`would remove ${pathLog}`);

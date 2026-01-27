@@ -3,6 +3,7 @@ import { dirname, resolve } from 'node:path';
 import { afterEach, describe, expect, test, vi } from 'vitest';
 
 import { removeSync } from '../index.js';
+import { getMatchedFiles, throwOrCallback } from '../utils.js';
 
 function touch(str: string): string {
   const dir = dirname((str = resolve(str)));
@@ -188,7 +189,7 @@ describe('test remove-glob CLI', () => {
       expect(existsSync(str)).toBeTruthy();
       expect(output).toBeTruthy();
       expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('-- dry-run --'));
-      expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('would remove directory: '));
+      expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('would remove directory recursively: '));
       expect(logSpy).toHaveBeenCalled();
     });
 
@@ -428,7 +429,7 @@ describe('test remove-glob CLI', () => {
       expect(existsSync(str)).toBeTruthy();
       expect(output).toBeTruthy();
       expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('-- dry-run --'));
-      expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('would remove directory: '));
+      expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('would remove directory recursively: '));
       expect(logSpy).toHaveBeenCalled();
     });
 
@@ -525,6 +526,110 @@ describe('test remove-glob CLI', () => {
       // Assert: 'keep.txt' should remain, 'remove.txt' should be deleted
       expect(existsSync(keep)).toBeTruthy();
       expect(existsSync(remove)).toBeFalsy();
+    });
+
+    test('brace expansion: {foo,bar}*.txt matches both foo1.txt and bar2.txt for removal', () => {
+      const dir = './tests/input';
+      const foo1 = resolve(dir, 'foo1.txt');
+      const bar2 = resolve(dir, 'bar2.txt');
+      const baz3 = resolve(dir, 'baz3.txt');
+      touch(foo1);
+      touch(bar2);
+      touch(baz3);
+      expect(existsSync(foo1)).toBeTruthy();
+      expect(existsSync(bar2)).toBeTruthy();
+      expect(existsSync(baz3)).toBeTruthy();
+      // Remove files matching brace expansion
+      removeSync({ glob: 'tests/input/{foo,bar}*.txt' });
+      expect(existsSync(foo1)).toBeFalsy();
+      expect(existsSync(bar2)).toBeFalsy();
+      expect(existsSync(baz3)).toBeTruthy();
+    });
+
+    test('negation: ["tests/input/*.js", "!tests/input/*.spec.js", "!tests/input/*.test.js"] matches only non-test js files for removal', () => {
+      const dir = './tests/input';
+      const ajs = resolve(dir, 'a.js');
+      const bspec = resolve(dir, 'b.spec.js');
+      const ctest = resolve(dir, 'c.test.js');
+      const djs = resolve(dir, 'd.js');
+      touch(ajs);
+      touch(bspec);
+      touch(ctest);
+      touch(djs);
+      expect(existsSync(ajs)).toBeTruthy();
+      expect(existsSync(bspec)).toBeTruthy();
+      expect(existsSync(ctest)).toBeTruthy();
+      expect(existsSync(djs)).toBeTruthy();
+      // Remove only non-test js files
+      removeSync({ glob: ['tests/input/*.js', '!tests/input/*.spec.js', '!tests/input/*.test.js'] });
+      expect(existsSync(ajs)).toBeFalsy();
+      expect(existsSync(djs)).toBeFalsy();
+      expect(existsSync(bspec)).toBeTruthy();
+      expect(existsSync(ctest)).toBeTruthy();
+    });
+
+    describe('throwOrCallback() function', () => {
+      test('throws error when no callback', () => {
+        expect(() => {
+          // Should throw
+          throwOrCallback(new Error('Test error'));
+        }).toThrow('Test error');
+      });
+
+      test('calls callback with error', () => {
+        let called = false;
+        throwOrCallback(new Error('Test error'), () => {
+          called = true;
+        });
+        expect(called).toBeTruthy();
+      });
+    });
+
+    describe('getMatchedFiles() function', () => {
+      test('returns empty array for empty pattern', () => {
+        const result = getMatchedFiles('', {});
+        expect(Array.isArray(result)).toBeTruthy();
+        expect(result.length).toBe(0);
+      });
+
+      test('returns empty array for only negation pattern', () => {
+        const result = getMatchedFiles(['!tests/input/*.js'], {});
+        expect(Array.isArray(result)).toBeTruthy();
+        expect(result.length).toBe(0);
+      });
+
+      test('dotfile pattern with all option', () => {
+        const dir = './tests/input';
+        const dotfile = resolve(dir, '.hidden.txt');
+        touch(dotfile);
+        expect(existsSync(dotfile)).toBeTruthy();
+        const result = getMatchedFiles('tests/input/*.txt', { all: true });
+        expect(result.some(f => f.endsWith('.hidden.txt'))).toBeTruthy();
+        removeSync({ paths: dotfile });
+      });
+
+      test('opts.exclude as string', () => {
+        const dir = './tests/input';
+        const file = resolve(dir, 'foo.txt');
+        touch(file);
+        expect(existsSync(file)).toBeTruthy();
+        // Exclude the file using a string
+        const result = getMatchedFiles('tests/input/*.txt', { exclude: 'tests/input/*.txt' });
+        expect(result.length).toBe(0);
+        removeSync({ paths: file });
+      });
+    });
+
+    describe('removeSync() function', () => {
+      test('throws when both paths and glob provided', () => {
+        expect(() => removeSync({ paths: 'foo.txt', glob: 'bar/*.js' })).toThrow(
+          'Providing both `--paths` and `--glob` pattern at the same time is not supported, you must chose only one.',
+        );
+      });
+
+      test('throws when neither paths nor glob provided', () => {
+        expect(() => removeSync({})).toThrow('Please make sure to provide file paths via command arguments or via `--glob` pattern');
+      });
     });
   });
 });
