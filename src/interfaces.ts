@@ -27,4 +27,10 @@ export interface RemoveOptions {
 
   /** Print more information to console */
   verbose?: boolean;
+
+  /**
+   * Glob pattern(s) to exclude from deletion. If not provided, defaults to `["**\/.git/**", "**\/.git", "**\/node_modules/**", "**\/node_modules"]`
+   * To disable exclusion and allow deleting everything, pass an empty array ([]).
+   */
+  exclude?: string | string[];
 }
