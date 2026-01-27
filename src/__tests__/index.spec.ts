@@ -568,62 +568,68 @@ describe('test remove-glob CLI', () => {
       expect(existsSync(ctest)).toBeTruthy();
     });
 
-    test('throwOrCallback: throws error when no callback', () => {
-      expect(() => {
-        // Should throw
-        throwOrCallback(new Error('Test error'));
-      }).toThrow('Test error');
-    });
-
-    test('throwOrCallback: calls callback with error', () => {
-      let called = false;
-      throwOrCallback(new Error('Test error'), () => {
-        called = true;
+    describe('throwOrCallback() function', () => {
+      test('throws error when no callback', () => {
+        expect(() => {
+          // Should throw
+          throwOrCallback(new Error('Test error'));
+        }).toThrow('Test error');
       });
-      expect(called).toBeTruthy();
+
+      test('calls callback with error', () => {
+        let called = false;
+        throwOrCallback(new Error('Test error'), () => {
+          called = true;
+        });
+        expect(called).toBeTruthy();
+      });
     });
 
-    test('getMatchedFiles: returns empty array for empty pattern', () => {
-      const result = getMatchedFiles('', {});
-      expect(Array.isArray(result)).toBeTruthy();
-      expect(result.length).toBe(0);
+    describe('getMatchedFiles() function', () => {
+      test('returns empty array for empty pattern', () => {
+        const result = getMatchedFiles('', {});
+        expect(Array.isArray(result)).toBeTruthy();
+        expect(result.length).toBe(0);
+      });
+
+      test('returns empty array for only negation pattern', () => {
+        const result = getMatchedFiles(['!tests/input/*.js'], {});
+        expect(Array.isArray(result)).toBeTruthy();
+        expect(result.length).toBe(0);
+      });
+
+      test('dotfile pattern with all option', () => {
+        const dir = './tests/input';
+        const dotfile = resolve(dir, '.hidden.txt');
+        touch(dotfile);
+        expect(existsSync(dotfile)).toBeTruthy();
+        const result = getMatchedFiles('tests/input/*.txt', { all: true });
+        expect(result.some(f => f.endsWith('.hidden.txt'))).toBeTruthy();
+        removeSync({ paths: dotfile });
+      });
+
+      test('opts.exclude as string', () => {
+        const dir = './tests/input';
+        const file = resolve(dir, 'foo.txt');
+        touch(file);
+        expect(existsSync(file)).toBeTruthy();
+        // Exclude the file using a string
+        const result = getMatchedFiles('tests/input/*.txt', { exclude: 'tests/input/*.txt' });
+        expect(result.length).toBe(0);
+        removeSync({ paths: file });
+      });
     });
 
-    test('getMatchedFiles: returns empty array for only negation pattern', () => {
-      const result = getMatchedFiles(['!tests/input/*.js'], {});
-      expect(Array.isArray(result)).toBeTruthy();
-      expect(result.length).toBe(0);
-    });
+    describe('removeSync() function', () => {
+      test('throws when both paths and glob provided', () => {
+        expect(() => removeSync({ paths: 'foo.txt', glob: 'bar/*.js' })).toThrow(
+          'Providing both `--paths` and `--glob` pattern at the same time is not supported, you must chose only one.',
+        );
+      });
 
-    test('getMatchedFiles: dotfile pattern with all option', () => {
-      const dir = './tests/input';
-      const dotfile = resolve(dir, '.hidden.txt');
-      touch(dotfile);
-      expect(existsSync(dotfile)).toBeTruthy();
-      const result = getMatchedFiles('tests/input/*.txt', { all: true });
-      expect(result.some(f => f.endsWith('.hidden.txt'))).toBeTruthy();
-      removeSync({ paths: dotfile });
-    });
-
-    test('getMatchedFiles: opts.exclude as string', () => {
-      const dir = './tests/input';
-      const file = resolve(dir, 'foo.txt');
-      touch(file);
-      expect(existsSync(file)).toBeTruthy();
-      // Exclude the file using a string
-      const result = getMatchedFiles('tests/input/*.txt', { exclude: 'tests/input/*.txt' });
-      expect(result.length).toBe(0);
-      removeSync({ paths: file });
-    });
-
-    test('removeSync: throws when both paths and glob provided', () => {
-      expect(() => removeSync({ paths: 'foo.txt', glob: 'bar/*.js' })).toThrow(
-        'Providing both `--paths` and `--glob` pattern at the same time is not supported, you must chose only one.',
-      );
-    });
-
-    test('removeSync: throws when neither paths nor glob provided', () => {
-      expect(() => removeSync({})).toThrow('Please make sure to provide file paths via command arguments or via `--glob` pattern');
+      test('throws when neither paths nor glob provided', () => {
+        expect(() => removeSync({})).toThrow('Please make sure to provide file paths via command arguments or via `--glob` pattern');
+      });
     });
   });
 });
