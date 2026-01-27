@@ -15,6 +15,9 @@ All notable changes to this project will be documented in this file. See [Conven
 
 ## [1.0.0](https://github.com/ghiscoding/remove-glob/compare/v0.4.10...v1.0.0) (2026-01-26)
 
+> [!NOTE]
+> Please visit the [v1.0.0](https://github.com/ghiscoding/remove-glob/releases/tag/v1.0.0) release for more details about the migration.
+
 ### ⚠ BREAKING CHANGES
 
 * drop `tinyglobby` and use native `fs.glob`
