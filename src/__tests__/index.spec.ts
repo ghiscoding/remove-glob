@@ -509,5 +509,22 @@ describe('test remove-glob CLI', () => {
       expect(result).toBe(false);
       vi.resetModules();
     });
+
+    test('should not remove files matching the exclude option', () => {
+      // Setup test files
+      const keep = touch('./tests/keep.txt');
+      const remove = touch('./tests/remove.txt');
+
+      expect(existsSync(keep)).toBeTruthy();
+      expect(existsSync(remove)).toBeTruthy();
+
+      // Act: remove with exclude option (exclude must match the actual file path)
+      const out = removeSync({ glob: './tests/*.txt', exclude: ['./tests/keep.txt'] });
+      expect(out).toBeTruthy();
+
+      // Assert: 'keep.txt' should remain, 'remove.txt' should be deleted
+      expect(existsSync(keep)).toBeTruthy();
+      expect(existsSync(remove)).toBeFalsy();
+    });
   });
 });
