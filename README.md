@@ -29,29 +29,47 @@ A `remove` binary is available, it takes an optional path argument (zero or mult
 > The `paths` and `glob` arguments are both optionals, but you **must** provide at least 1 of them.
 > However, please note that providing both of them simultaneously is not supported and will throw an error (choose the option that is best suited to your use case).
 
-> [!NOTE]
-> When using the `--glob` option, dotfiles and dot-directories (e.g. `.env`, `.gitignore`, `.config/`) are included by default. If you want to exclude them, you can adjust your glob pattern (e.g. use `**/[!.]*.js` or add an `!**/.*` pattern).
+When using the `--glob` option, dotfiles and dot-directories (e.g. `.env`, `.gitignore`, `.config/`) are included by default. If you want to exclude them, you can adjust your glob pattern (e.g. use `**/[!.]*.js` or add an `!**/.*` pattern).
 
 ```
 Usage:
-  remove [paths..] [options]  Remove all items recursively
+  remove [paths..] [options] → Remove all items recursively
 
 Arguments:
-  paths           directory or file paths to remove                                 [string..]
+  paths           Directory or file paths to remove                                           [string..]
 
 Options:
-      --cwd       Directory to resolve from (default ".")                           [string]
-  -d, --dryRun    Show which files/dirs would be deleted but without removing them  [boolean]
-  -g, --glob      Glob pattern(s) to find which files/dirs to remove                [array]
-  -s, --stat      Show the stats of the items being removed                         [boolean]
-  -V, --verbose   If true, it will log each file or directory being removed         [boolean]
-  -e, --exclude   Pattern or glob to exclude (may be passed multiple times)         [string|string[]]
-  -h, --help      Show help                                                         [boolean]
-  -v, --version   Show version number                                               [boolean]
+      --cwd       Directory to resolve from (default ".")                                     [string]
+  -d, --dry-run   Show which files/dirs would be deleted but without actually removing them   [boolean]
+  -g, --glob      Glob pattern(s) to find which files/dirs to remove                          [array]
+  -a, --all       Include dotfiles (files starting with a dot) when matching glob patterns    [boolean]
+  -s, --stat      Show the stats of the items being removed                                   [boolean]
+  -V, --verbose   If true, it will log each file or directory being removed                   [boolean]
+  -e, --exclude   Glob pattern(s) to exclude from deletion (overrides the default patterns)   [array]
+  -h, --help      Show help                                                                   [boolean]
+  -v, --version   Show version number                                                         [boolean]
 ```
 
-> [!NOTE]
-> When `exclude` glob pattern(s) are provided, it will override the default exclude of: [`"**/.git/**", "**/.git", "**/node_modules/**", "**/node_modules"`]
+When `exclude` glob pattern(s) are provided, it will override the default exclude of: [`"**/.git/**", "**/.git", "**/node_modules/**", "**/node_modules"`].
+
+
+The `--all`/`-a` option includes dotfiles (files starting with a dot) in glob matches. By default, dotfiles are excluded unless explicitly matched or this option is used.
+
+#### Negation Patterns
+You can use negation patterns (starting with `!`) in glob arrays to exclude files from removal:
+
+```sh
+$ npx remove --glob "src/**/*.js" --glob "!src/**/*.test.js"
+# This will remove all .js files except those ending with .test.js
+```
+
+#### Brace Expansion
+Brace expansion is supported in glob patterns:
+
+```sh
+$ npx remove --glob "src/*.{js,ts}"
+# This will match both .js and .ts files in src/
+```
 
 Remove files or directories.  Note: on Windows globs must be **double quoted**, everybody else can quote however they please.
 
@@ -69,16 +87,14 @@ $ remove foo bar
 $ remove --glob \"dist/**/*.{js,map}\"
 ```
 
-> [!NOTE]
-> When using the `--glob` option, it will skip `.git/` and `node_modules/` directories by default (using the default `--exclude` patterns).
-> If you want to allow deletion of these directories, you can override the default by providing your own `--exclude` option (including an empty array to disable exclusion):
->
-> ```sh
-> # Remove everything, including .git and node_modules
-> $ npx remove --glob "**/*" --exclude ""
-> # Or exclude only .git, but allow node_modules to be deleted
-> $ npx remove --glob "**/*" --exclude "**/.git/**" --exclude "**/.git"
-> ```
+When using the `--glob` option, it will skip `.git/` and `node_modules/` directories by default (using the default `--exclude` patterns). If you want to allow deletion of these directories, you can override the default by providing your own `--exclude` option (including an empty array to disable exclusion):
+
+```sh
+# Remove everything, including .git and node_modules
+$ npx remove --glob "**/*" --exclude ""
+# Or exclude only .git, but allow node_modules to be deleted
+$ npx remove --glob "**/*" --exclude "**/.git/**" --exclude "**/.git"
+```
 
 ### Usage
 
@@ -111,18 +127,27 @@ The first argument is an object holding any of the options shown below. The last
 ```js
 {
   cwd: string;              // directory to resolve your `filepath` from, defaults to `process.cwd()`
-  dryRun: boolean;          // show what would be copied, without actually copying anything
+  dryRun: boolean;          // show what would be removed, without actually removing anything
   paths: string | string[]; // filepath(s) to remove – may be a file or a directory.
-  glob: string;             // glob pattern to find which files/directories to remove
-  exclude: string[];        // glob pattern(s) to exclude from deletion
-  stats: boolean;           // show some statistics after execution (time + file count)
+  glob: string | string[];  // glob pattern(s) to find which files/directories to remove
+  exclude: string | string[]; // glob pattern(s) to exclude from deletion
+  all: boolean;             // include dotfiles (files starting with a dot) in glob matches
+  stat: boolean;            // show some statistics after execution (time + file count)
   verbose: boolean;         // print more information to console when executing the removal
 }
 ```
 
+
 > [!NOTE]
-> The first argument is required and it **must** include either a `paths` or a `glob`, but it cannot include both options simultaneously.
-> Also when `exclude` glob pattern(s) are provided, it will override the default exclude of: [`"**/.git/**", "**/.git", "**/node_modules/**", "**/node_modules"`]
+> The first argument is required and it **must** include either a `paths` or a `glob`, but it cannot include both options simultaneously. A
+
+When an `exclude` glob pattern is provided, it will override the default exclusion of: [`"**/.git/**", "**/.git", "**/node_modules/**", "**/node_modules"`].
+
+#### Advanced glob usage
+
+- **Negation**: Use `!pattern` in a glob array to exclude files from removal.
+- **Brace expansion**: Use `{a,b}` to match multiple alternatives in a single pattern.
+- **Dotfiles**: Use `--all`/`-a` to include dotfiles in glob matches.
 
 ### Used by
 

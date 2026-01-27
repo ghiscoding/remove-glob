@@ -33,4 +33,9 @@ export interface RemoveOptions {
    * To disable exclusion and allow deleting everything, pass an empty array ([]).
    */
   exclude?: string | string[];
+
+  /**
+   * If true, include dotfiles (files starting with a dot) when matching glob patterns.
+   */
+  all?: boolean;
 }

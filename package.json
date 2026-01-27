@@ -50,8 +50,8 @@
     "preview:version": "node dist/cli.js --version",
     "preview:del1": "node dist/cli.js examples --dry-run",
     "preview:del2": "node dist/cli.js --glob \"examples/**/*.{js,md}\" --dry-run",
-    "test": "vitest --watch --config ./vitest.config.mts",
-    "test:coverage": "vitest --coverage --config ./vitest.config.mts"
+    "test": "vitest --coverage --config ./vitest.config.mts",
+    "test:watch": "vitest --watch --config ./vitest.config.mts"
   },
   "dependencies": {
     "cli-nano": "^1.2.2"
