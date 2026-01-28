@@ -94,7 +94,7 @@ $ remove foo bar
 $ remove --glob \"dist/**/*.{js,map}\"
 ```
 
-When using the `--glob` option, it will skip `.git/` and `node_modules/` directories by default (using the default `--exclude` patterns). If you want to allow deletion of these directories, you can override the default by providing your own `--exclude` option (including an empty array to disable exclusion):
+When using the `--glob` option, it will skip `.git/` and `node_modules/` directories by default (internally it just set that as the default `exclude`). If you want to allow deletion of these directories, you can override the default by providing your own `--exclude` option (including an empty array to disable exclusion), for example:
 
 ```sh
 # Remove everything, including .git and node_modules
