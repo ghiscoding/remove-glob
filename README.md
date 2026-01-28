@@ -19,7 +19,7 @@ Inspired by [rimraf](https://www.npmjs.com/package/rimraf) and [premove](https:/
 ### version 0.x
 - works with Node.JS 20.x by using `tinyglobby` for glob matching
 
-### version 1.0 to 2.0
+### version 1.0
 - drop `tinyglobby` and use `fs.glob` native code (requires Node.JS >=22.17)
 
 --- 
