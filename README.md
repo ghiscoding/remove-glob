@@ -134,14 +134,14 @@ The first argument is an object holding any of the options shown below. The last
 
 ```js
 {
-  cwd: string;              // directory to resolve your `filepath` from, defaults to `process.cwd()`
-  dryRun: boolean;          // show what would be removed, without actually removing anything
-  paths: string | string[]; // filepath(s) to remove – may be a file or a directory.
-  glob: string | string[];  // glob pattern(s) to find which files/directories to remove
-  exclude: string | string[]; // glob pattern(s) to exclude from deletion
-  all: boolean;             // include dotfiles (files starting with a dot) in glob matches
-  stat: boolean;            // show some statistics after execution (time + file count)
-  verbose: boolean;         // print more information to console when executing the removal
+  cwd: string;                 // directory to resolve your `filepath` from, defaults to `process.cwd()`
+  dryRun: boolean;             // show what would be removed, without actually removing anything
+  paths: string | string[];    // filepath(s) to remove – may be a file or a directory.
+  glob: string | string[];     // glob pattern(s) to find which files/directories to remove
+  exclude: string | string[];  // glob pattern(s) to exclude from deletion
+  all: boolean;                // include dotfiles (files starting with a dot) in glob matches
+  stat: boolean;               // show some statistics after execution (time + file count)
+  verbose: boolean;            // print more information to console when executing the removal
 }
 ```
 
