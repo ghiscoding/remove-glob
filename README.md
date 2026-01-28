@@ -15,11 +15,11 @@ A tiny cross-platform utility to remove items or directories recursively, it als
 
 Inspired by [rimraf](https://www.npmjs.com/package/rimraf) and [premove](https://www.npmjs.com/package/premove) but also supports glob pattern to remove multiple files or directories.
 
-## Major Changes
-### version 0.x
+### Major Changes
+#### version 0.x
 - works with Node.JS 20.x by using `tinyglobby` for glob matching
 
-### version 1.0
+#### version 1.0
 - drop `tinyglobby` and use `fs.glob` native code (requires Node.JS >=22.17)
 
 --- 
@@ -58,8 +58,7 @@ Options:
   -v, --version   Show version number                                                         [boolean]
 ```
 
-When `exclude` glob pattern(s) are provided, it will override the default exclude of: [`"**/.git/**", "**/.git", "**/node_modules/**", "**/node_modules"`].
-
+When `exclude` glob pattern(s) are provided, it will override the default exclude [`"**/.git/**", "**/.git", "**/node_modules/**", "**/node_modules"`].
 
 The `--all`/`-a` option includes dotfiles (files starting with a dot) in glob matches. By default, dotfiles are excluded unless explicitly matched or this option is used.
 
@@ -100,6 +99,7 @@ When using the `--glob` option, it will skip `.git/` and `node_modules/` directo
 ```sh
 # Remove everything, including .git and node_modules
 $ npx remove --glob "**/*" --exclude ""
+
 # Or exclude only .git, but allow node_modules to be deleted
 $ npx remove --glob "**/*" --exclude "**/.git/**" --exclude "**/.git"
 ```
@@ -122,7 +122,7 @@ const dir = resolve('./foo/bar');
 await removeSync({ paths: ['hello.txt'], cwd: dir });
 ```
 
-### JavaScript API
+## JavaScript API
 
 ```js
 import { removeSync } from 'remove-glob';
@@ -149,7 +149,7 @@ The first argument is an object holding any of the options shown below. The last
 > [!NOTE]
 > The first argument is required and it **must** include either a `paths` or a `glob`, but it cannot include both options simultaneously. A
 
-When an `exclude` glob pattern is provided, it will override the default exclusion of: [`"**/.git/**", "**/.git", "**/node_modules/**", "**/node_modules"`].
+When an `exclude` glob pattern is provided, it will override the default exclusion [`"**/.git/**", "**/.git", "**/node_modules/**", "**/node_modules"`].
 
 #### Advanced glob usage
 
