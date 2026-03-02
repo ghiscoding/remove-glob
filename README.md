@@ -6,8 +6,8 @@
 
 [![npm](https://img.shields.io/npm/dy/remove-glob)](https://www.npmjs.com/package/remove-glob)
 [![npm](https://img.shields.io/npm/v/remove-glob.svg)](https://www.npmjs.com/package/remove-glob)
-[![npm bundle size](https://img.shields.io/badge/gzip-1.05kB-1183c4)](https://bundlejs.com/?q=remove-glob)
-[![npm bundle size](https://img.shields.io/badge/with%20CLI%20gzip-3.13kB-1183c4)](https://bundlejs.com/?q=remove-glob)
+[![npm bundle size](https://img.shields.io/badge/API%20only%20(gzip)-1.05kB-1183c4)](https://bundlejs.com/?q=remove-glob)
+[![npm bundle size](https://img.shields.io/badge/API+CLI%20(gzip)-3.57kB-1183c4)](https://bundlejs.com/?q=remove-glob%2Cremove-glob%2Fdist%2Fcli.js)
 
 ## Remove-Glob
 
