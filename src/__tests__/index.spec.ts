@@ -6,7 +6,8 @@ import { removeSync } from '../index.js';
 import { getMatchedFiles, throwOrCallback } from '../utils.js';
 
 function touch(str: string): string {
-  const dir = dirname((str = resolve(str)));
+  str = resolve(str);
+  const dir = dirname(str);
   if (!existsSync(dir)) {
     mkdirSync(dir, { recursive: true });
   }
