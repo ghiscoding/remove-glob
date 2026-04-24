@@ -12,7 +12,7 @@ describe('remove-glob', () => {
 
       vi.spyOn(process, 'argv', 'get').mockReturnValue(['node.exe', 'remove-glob/dist/cli.js', '--unknown-option']);
 
-      import('../cli.ts')
+      import('../cli.js')
         .then((cli: any) => {
           cli();
         })

@@ -43,7 +43,7 @@ describe('remove-glob', () => {
           // Do nothing for code 0
         });
 
-        import('../cli.ts')
+        import('../cli.js')
           .then(() => {
             // Wait until test-cli exists, then check files
             const start = Date.now();
