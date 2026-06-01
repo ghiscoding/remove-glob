@@ -17,7 +17,7 @@ describe('remove-glob', () => {
           cli();
         })
         .catch(_ => {
-          expect(errorSpy).toHaveBeenCalledWith(new Error('Unknown CLI option: unknown-option'));
+          expect(errorSpy).toHaveBeenCalledWith(new Error('Unknown argument: unknown-option'));
           expect(exitSpy).toHaveBeenCalledWith(1);
           process.exitCode = undefined;
           done();
