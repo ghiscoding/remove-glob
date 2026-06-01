@@ -1,6 +1,12 @@
 # Change Log 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.1](https://github.com/ghiscoding/remove-glob/compare/v1.2.0...v1.2.1) (2026-06-01)
+
+### Bug Fixes
+
+* **deps:** update all dependencies ([0121938](https://github.com/ghiscoding/remove-glob/commit/0121938b3da5f85d9b3b37ddfc6bd57f1234239a))
+
 ## [1.2.0](https://github.com/ghiscoding/remove-glob/compare/v1.1.1...v1.2.0) (2026-01-27)
 
 ### Features
