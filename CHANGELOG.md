@@ -1,6 +1,13 @@
 # Change Log 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.2](https://github.com/ghiscoding/remove-glob/compare/v1.2.1...v1.2.2) (2026-08-22)
+
+### Bug Fixes
+
+* add Biome consistent curly braces ([744d747](https://github.com/ghiscoding/remove-glob/commit/744d747bb3ee7240b65dec468e911e8b945938d5))
+* **security:** harden CLI option lookup against prototype pollution ([9ed1bec](https://github.com/ghiscoding/remove-glob/commit/9ed1becc44677b18a32407aa4bd017a6834815cc))
+
 ## [1.2.1](https://github.com/ghiscoding/remove-glob/compare/v1.2.0...v1.2.1) (2026-06-01)
 
 ### Bug Fixes
