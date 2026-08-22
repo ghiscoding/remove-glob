@@ -24,6 +24,47 @@ function handleError(err?: Error) {
 }
 
 try {
+  const options = {
+    cwd: {
+      type: 'string',
+      describe: 'Directory to resolve from (default ".")',
+    },
+    dryRun: {
+      alias: 'd',
+      type: 'boolean',
+      default: false,
+      describe: 'Show which files/dirs would be deleted but without actually removing them',
+    },
+    glob: {
+      alias: 'g',
+      type: 'array',
+      describe: 'Glob pattern(s) to find which files/dirs to remove',
+    },
+    all: {
+      alias: 'a',
+      type: 'boolean',
+      default: false,
+      describe: 'Include dotfiles (files starting with a dot) when matching glob patterns',
+    },
+    stat: {
+      alias: 's',
+      default: false,
+      describe: 'Show the stats of the items being removed',
+      type: 'boolean',
+    },
+    verbose: {
+      alias: 'V',
+      type: 'boolean',
+      default: false,
+      describe: 'If true, it will log each file or directory being removed',
+    },
+    exclude: {
+      alias: 'e',
+      type: 'array',
+      describe: 'Glob pattern(s) to exclude from deletion (overrides the default patterns)',
+    },
+  };
+
   const config = {
     command: {
       name: 'remove',
@@ -47,46 +88,8 @@ try {
         },
       ],
     },
-    options: {
-      cwd: {
-        type: 'string',
-        describe: 'Directory to resolve from (default ".")',
-      },
-      dryRun: {
-        alias: 'd',
-        type: 'boolean',
-        default: false,
-        describe: 'Show which files/dirs would be deleted but without actually removing them',
-      },
-      glob: {
-        alias: 'g',
-        type: 'array',
-        describe: 'Glob pattern(s) to find which files/dirs to remove',
-      },
-      all: {
-        alias: 'a',
-        type: 'boolean',
-        default: false,
-        describe: 'Include dotfiles (files starting with a dot) when matching glob patterns',
-      },
-      stat: {
-        alias: 's',
-        default: false,
-        describe: 'Show the stats of the items being removed',
-        type: 'boolean',
-      },
-      verbose: {
-        alias: 'V',
-        type: 'boolean',
-        default: false,
-        describe: 'If true, it will log each file or directory being removed',
-      },
-      exclude: {
-        alias: 'e',
-        type: 'array',
-        describe: 'Glob pattern(s) to exclude from deletion (overrides the default patterns)',
-      },
-    },
+    // Keep user-controlled option lookups away from Object.prototype.
+    options: Object.assign(Object.create(null), options),
     version: readPackage().version,
   } as const;
 
