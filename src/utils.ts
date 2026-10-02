@@ -7,7 +7,7 @@ import { resolve } from 'node:path';
  */
 export function getMatchedFiles(glob: string | string[], opts: { cwd?: string; exclude?: string | string[]; all?: boolean }): string[] {
   const defaultExclude = ['**/.git/**', '**/.git', '**/node_modules/**', '**/node_modules'];
-  const globOptions: GlobOptions = { cwd: opts.cwd, withFileTypes: false, exclude: defaultExclude };
+  const globOptions = { cwd: opts.cwd, withFileTypes: false, exclude: defaultExclude } satisfies GlobOptions;
   if (Array.isArray(opts.exclude)) {
     globOptions.exclude = opts.exclude;
   } else if (typeof opts.exclude === 'string') {
@@ -33,28 +33,16 @@ export function getMatchedFiles(glob: string | string[], opts: { cwd?: string; e
     }
   }
 
-  // Collect all files matching positive patterns
-  const matchedSet = new Set<string>();
-  for (const pattern of positivePatterns) {
-    const globResult = globSync(pattern, globOptions);
-    if (Array.isArray(globResult) && globResult.length > 0) {
-      for (const v of globResult) {
-        if (typeof v === 'string') {
-          matchedSet.add(v);
-        }
-      }
-    }
+  if (!positivePatterns.length) {
+    return [];
   }
 
+  const matchedSet = new Set(globSync(positivePatterns, globOptions));
+
   // Remove files matching any negated pattern
-  for (const pattern of negatedPatterns) {
-    const globResult = globSync(pattern, globOptions);
-    if (Array.isArray(globResult) && globResult.length > 0) {
-      for (const v of globResult) {
-        if (typeof v === 'string') {
-          matchedSet.delete(v);
-        }
-      }
+  if (negatedPatterns.length) {
+    for (const path of globSync(negatedPatterns, globOptions)) {
+      matchedSet.delete(path);
     }
   }
 

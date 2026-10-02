@@ -1,27 +1,19 @@
-import { beforeEach, describe, expect, test, vi } from 'vitest';
+import { afterEach, describe, expect, test, vi } from 'vitest';
 
-describe('remove-glob', () => {
-  beforeEach(() => {
-    vi.spyOn(process, 'exit').mockImplementation((() => {}) as any);
+describe('remove-glob CLI', () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+    process.exitCode = undefined;
   });
 
-  test('CLI entry failure (no valid process.argv)', () =>
-    new Promise((done: any) => {
-      const errorSpy = vi.spyOn(global.console, 'error').mockReturnValue();
-      const exitSpy = vi.spyOn(process, 'exit');
+  test('reports an unknown argument and exits with failure', async () => {
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const exitSpy = vi.spyOn(process, 'exit').mockImplementation((() => {}) as never);
+    vi.spyOn(process, 'argv', 'get').mockReturnValue(['node.exe', 'remove-glob/dist/cli.js', '--unknown-option']);
 
-      vi.spyOn(process, 'argv', 'get').mockReturnValue(['node.exe', 'remove-glob/dist/cli.js', '--unknown-option']);
+    await import('../cli.js');
 
-      import('../cli.js')
-        .then((cli: any) => {
-          cli();
-        })
-        .catch(_ => {
-          expect(errorSpy).toHaveBeenCalledWith(new Error('Unknown argument: unknown-option'));
-          expect(exitSpy).toHaveBeenCalledWith(1);
-          process.exitCode = undefined;
-          done();
-          process.exit(0);
-        });
-    }));
+    expect(errorSpy).toHaveBeenCalledExactlyOnceWith(new Error('Unknown argument: unknown-option'));
+    expect(exitSpy).toHaveBeenCalledExactlyOnceWith(1);
+  });
 });
