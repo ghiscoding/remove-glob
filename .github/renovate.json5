@@ -5,7 +5,13 @@
   minimumReleaseAge: '2 days',
   pin: false,
   rangeStrategy: 'bump',
-  packageRules: [],
+  packageRules: [
+    {
+      // Exclude all the packages that I personally maintain from minimumReleaseAge
+      matchPackagePatterns: ['^cli-nano$'],
+      minimumReleaseAge: '0',
+    },
+  ],
   ignoreDeps: ['node'],
   schedule: ['every 3 months'],
 }
