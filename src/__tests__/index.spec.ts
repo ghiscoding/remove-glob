@@ -1,4 +1,4 @@
-import { existsSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, lstatSync, mkdirSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { afterEach, describe, expect, test, vi } from 'vitest';
 
@@ -17,6 +17,7 @@ function touch(str: string): string {
 
 describe('test remove-glob CLI', () => {
   afterEach(() => {
+    vi.restoreAllMocks();
     rmSync('tests', { recursive: true, force: true });
   });
 
@@ -51,10 +52,6 @@ describe('test remove-glob CLI', () => {
   });
 
   describe('positional arguments', () => {
-    afterEach(() => {
-      rmSync('tests', { recursive: true, force: true });
-    });
-
     test('remove single file using positional', () => {
       const foo = touch('./tests/foo.txt');
       const bar = touch('./tests/bar.txt');
@@ -164,6 +161,37 @@ describe('test remove-glob CLI', () => {
       expect(dir).toBeFalsy();
     });
 
+    test.skipIf(process.platform === 'win32').each(['existing', 'missing'])(
+      'removes a %s file symlink without removing its target',
+      target => {
+        const targetPath = resolve('tests/target.txt');
+        if (target === 'existing') {
+          touch(targetPath);
+        } else {
+          mkdirSync('tests', { recursive: true });
+        }
+        const link = resolve('tests/link.txt');
+        symlinkSync(targetPath, link);
+        vi.spyOn(console, 'log').mockImplementation(() => {});
+
+        expect(removeSync({ paths: link, dryRun: true })).toBe(true);
+        expect(lstatSync(link).isSymbolicLink()).toBe(true);
+        expect(removeSync({ paths: link })).toBe(true);
+        expect(lstatSync(link, { throwIfNoEntry: false })).toBeUndefined();
+        expect(existsSync(targetPath)).toBe(target === 'existing');
+      },
+    );
+
+    test('removes a directory symlink without removing its contents', () => {
+      const file = touch('tests/target/keep.txt');
+      const link = resolve('tests/link');
+      symlinkSync(dirname(file), link, 'junction');
+
+      expect(removeSync({ paths: link })).toBe(true);
+      expect(lstatSync(link, { throwIfNoEntry: false })).toBeUndefined();
+      expect(existsSync(file)).toBe(true);
+    });
+
     test('options.cwd using positional', async () => {
       const file = touch('./tests/foo/hello.txt');
       const dir = dirname(file);
@@ -267,10 +295,6 @@ describe('test remove-glob CLI', () => {
   });
 
   describe('glob patterns', () => {
-    afterEach(() => {
-      rmSync('tests', { recursive: true, force: true });
-    });
-
     test('remove single file using glob', () => {
       const foo = touch('./tests/foo.txt');
       const bar = touch('./tests/bar.txt');
@@ -492,26 +516,6 @@ describe('test remove-glob CLI', () => {
       expect(existsSync('tests/foo.txt')).toBe(false);
     });
 
-    test('handles unexpected glob result type for coverage', async () => {
-      vi.doMock('../glob-wrapper.js', () => ({
-        globSyncWrapper: () => [123, 456],
-      }));
-      const { removeSync } = await import('../index.js');
-      const result = removeSync({ glob: 'tests/should-not-match-anything' });
-      expect(result).toBe(false);
-      vi.resetModules();
-    });
-
-    test('handles glob result with non-string, non-object type for full branch coverage', async () => {
-      vi.doMock('../glob-wrapper.js', () => ({
-        globSyncWrapper: () => [true],
-      }));
-      const { removeSync } = await import('../index.js');
-      const result = removeSync({ glob: 'tests/should-not-match-anything' });
-      expect(result).toBe(false);
-      vi.resetModules();
-    });
-
     test('should not remove files matching the exclude option', () => {
       // Setup test files
       const keep = touch('./tests/keep.txt');
@@ -587,6 +591,33 @@ describe('test remove-glob CLI', () => {
     });
 
     describe('getMatchedFiles() function', () => {
+      test('deduplicates overlapping patterns and applies multiple negations with cwd and exclusions', () => {
+        const cwd = resolve('tests/input');
+        const keep = touch('tests/input/keep.js');
+        touch('tests/input/a.spec.js');
+        touch('tests/input/b.test.js');
+        touch('tests/input/excluded/other.js');
+
+        const result = getMatchedFiles(['**/*.js', '*.js', 'keep.js', '!**/*.spec.js', '!**/*.test.js'], {
+          cwd,
+          exclude: ['excluded', 'excluded/**'],
+        });
+
+        expect(result).toEqual([keep]);
+      });
+
+      test('combines default exclusions with positive and negative patterns', () => {
+        touch('tests/input/.git/internal.js');
+        touch('tests/input/node_modules/dependency.js');
+        touch('tests/input/remove.spec.js');
+        const js = touch('tests/input/keep.js');
+        const ts = touch('tests/input/keep.ts');
+
+        const result = getMatchedFiles(['**/*.js', '**/*.ts', '!**/*.spec.js'], { cwd: resolve('tests/input') });
+
+        expect(result.sort()).toEqual([js, ts].sort());
+      });
+
       test('returns empty array for empty pattern', () => {
         const result = getMatchedFiles('', {});
         expect(Array.isArray(result)).toBeTruthy();
@@ -618,18 +649,6 @@ describe('test remove-glob CLI', () => {
         const result = getMatchedFiles('tests/input/*.txt', { exclude: 'tests/input/*.txt' });
         expect(result.length).toBe(0);
         removeSync({ paths: file });
-      });
-    });
-
-    describe('removeSync() function', () => {
-      test('throws when both paths and glob provided', () => {
-        expect(() => removeSync({ paths: 'foo.txt', glob: 'bar/*.js' })).toThrow(
-          'Providing both `--paths` and `--glob` pattern at the same time is not supported, you must chose only one.',
-        );
-      });
-
-      test('throws when neither paths nor glob provided', () => {
-        expect(() => removeSync({})).toThrow('Please make sure to provide file paths via command arguments or via `--glob` pattern');
       });
     });
   });

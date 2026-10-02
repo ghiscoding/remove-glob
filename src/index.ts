@@ -1,7 +1,7 @@
-import { existsSync, rmSync, statSync, unlinkSync } from 'node:fs';
+import { lstatSync, rmSync, unlinkSync } from 'node:fs';
 import { resolve } from 'node:path';
 import type { RemoveOptions } from './interfaces.js';
-import { throwOrCallback, getMatchedFiles } from './utils.js';
+import { getMatchedFiles, throwOrCallback } from './utils.js';
 
 /**
  * Remove the files or directories, the item(s) can be provided via positional arguments or via a `--glob` pattern.
@@ -49,14 +49,14 @@ export function removeSync(opts: RemoveOptions = {}, callback?: (e?: Error) => v
       path = resolve(opts.cwd || '.', path);
     }
 
-    if (existsSync(path)) {
-      const isDir = statSync(path).isDirectory();
-      const pathLog = `${isDir ? 'directory recursively' : 'file'}: ${path}`;
+    const metadata = lstatSync(path, { throwIfNoEntry: false });
+    if (metadata) {
+      const isDir = metadata.isDirectory();
 
       if (opts.dryRun) {
-        console.log(`would remove ${pathLog}`);
+        console.log(`would remove ${isDir ? 'directory recursively' : 'file'}: ${path}`);
       } else {
-        opts.verbose && console.log(`removing ${pathLog}`);
+        opts.verbose && console.log(`removing ${isDir ? 'directory recursively' : 'file'}: ${path}`);
         if (isDir) {
           rmSync(path, { recursive: true, force: true, maxRetries: process.platform === 'win32' ? 10 : 0 }); // delete folder recursively
         } else {
