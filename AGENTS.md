@@ -59,3 +59,4 @@ Before drafting or updating a PR title or description, read `.github/pull_reques
 - Mark checklist items accurately. Explain multiple scopes in `Comments` when applicable.
 - Add `fixes #<number>` on its own line only when an actual related issue is known.
 - Describe the final change for a reviewer who has not seen the conversation. Omit abandoned approaches and conversational history.
+- Return PR titles and descriptions as raw Markdown inside a fenced markdown code block so they can be copied directly.
