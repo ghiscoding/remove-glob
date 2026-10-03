@@ -37,8 +37,6 @@ A `remove` binary is available, it takes an optional path argument (zero or mult
 > The `paths` and `glob` arguments are both optionals, but you **must** provide at least 1 of them.
 > However, please note that providing both of them simultaneously is not supported and will throw an error (choose the option that is best suited to your use case).
 
-When using the `--glob` option, dotfiles and dot-directories (e.g. `.env`, `.gitignore`, `.config/`) are included by default. If you want to exclude them, you can adjust your glob pattern (e.g. use `**/[!.]*.js` or add an `!**/.*` pattern).
-
 ```
 Usage:
   remove [paths..] [options] → Remove all items recursively
@@ -60,7 +58,9 @@ Options:
 
 When `exclude` glob pattern(s) are provided, it will override the default exclude [`"**/.git/**", "**/.git", "**/node_modules/**", "**/node_modules"`].
 
-The `--all`/`-a` option includes dotfiles (files starting with a dot) in glob matches. By default, dotfiles are excluded unless explicitly matched or this option is used.
+The `--all`/`-a` option includes dotfiles and traverses dot-directories in glob matches. By default, dotfiles are excluded unless explicitly matched or this option is used.
+
+Exclusions and negations also protect descendants of matched directories. Directories containing protected descendants remain; only unprotected contents are removed. Positional directory paths are removed recursively without glob filtering.
 
 #### Negation Patterns
 You can use negation patterns (starting with `!`) in glob arrays to exclude files from removal:
@@ -130,7 +130,7 @@ import { removeSync } from 'remove-glob';
 removeSync(opt, callback);
 ```
 
-The first argument is an object holding any of the options shown below. The last argument is an optional callback function that will be executed after all files were removed.
+The first argument is an object holding any of the options shown below. The optional callback runs on completion or receives validation, matching, or deletion errors; without a callback, errors are thrown.
 
 ```js
 {
@@ -140,7 +140,7 @@ The first argument is an object holding any of the options shown below. The last
   glob: string | string[];     // glob pattern(s) to find which files/directories to remove
   exclude: string | string[];  // glob pattern(s) to exclude from deletion
   all: boolean;                // include dotfiles (files starting with a dot) in glob matches
-  stat: boolean;               // show some statistics after execution (time + file count)
+  stat: boolean;               // show duration and removal operation count (planned operations during dry runs)
   verbose: boolean;            // print more information to console when executing the removal
 }
 ```

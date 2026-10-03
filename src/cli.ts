@@ -1,68 +1,28 @@
 #!/usr/bin/env node
 
 import { readFileSync } from 'node:fs';
-import { dirname, resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'cli-nano';
 
 import { removeSync } from './index.js';
 
-function readPackage() {
-  const __dirname = dirname(fileURLToPath(import.meta.url));
-  const pkgPath = resolve(__dirname, '../package.json');
-  const pkg = readFileSync(pkgPath, 'utf8');
-  return JSON.parse(pkg);
-}
+const flag = (alias: string, describe: string) => ({ alias, type: 'boolean' as const, default: false, describe });
 
 function handleError(err?: Error) {
   if (err) {
     console.error(err);
-    process.exit(1);
-  } else {
-    process.exit(0);
   }
+  process.exit(err ? 1 : 0);
 }
 
 try {
   const options = {
-    cwd: {
-      type: 'string',
-      describe: 'Directory to resolve from (default ".")',
-    },
-    dryRun: {
-      alias: 'd',
-      type: 'boolean',
-      default: false,
-      describe: 'Show which files/dirs would be deleted but without actually removing them',
-    },
-    glob: {
-      alias: 'g',
-      type: 'array',
-      describe: 'Glob pattern(s) to find which files/dirs to remove',
-    },
-    all: {
-      alias: 'a',
-      type: 'boolean',
-      default: false,
-      describe: 'Include dotfiles (files starting with a dot) when matching glob patterns',
-    },
-    stat: {
-      alias: 's',
-      default: false,
-      describe: 'Show the stats of the items being removed',
-      type: 'boolean',
-    },
-    verbose: {
-      alias: 'V',
-      type: 'boolean',
-      default: false,
-      describe: 'If true, it will log each file or directory being removed',
-    },
-    exclude: {
-      alias: 'e',
-      type: 'array',
-      describe: 'Glob pattern(s) to exclude from deletion (overrides the default patterns)',
-    },
+    cwd: { type: 'string', describe: 'Directory to resolve from (default ".")' },
+    dryRun: flag('d', 'Show which files/dirs would be deleted but without actually removing them'),
+    glob: { alias: 'g', type: 'array', describe: 'Glob pattern(s) to find which files/dirs to remove' },
+    all: flag('a', 'Include dotfiles (files starting with a dot) when matching glob patterns'),
+    stat: flag('s', 'Show the stats of the items being removed'),
+    verbose: flag('V', 'If true, it will log each file or directory being removed'),
+    exclude: { alias: 'e', type: 'array', describe: 'Glob pattern(s) to exclude from deletion (overrides the default patterns)' },
   };
 
   const config = {
@@ -90,13 +50,10 @@ try {
     },
     // Keep user-controlled option lookups away from Object.prototype.
     options: Object.assign(Object.create(null), options),
-    version: readPackage().version,
+    version: JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8')).version,
   } as const;
 
-  const results = parseArgs(config);
-
-  // execute remove function
-  removeSync(results, err => handleError(err));
+  removeSync(parseArgs(config), handleError);
 } catch (err) {
   handleError(err as Error);
 }

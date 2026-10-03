@@ -1,79 +1,85 @@
 import { lstatSync, rmSync, unlinkSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { dirname, resolve } from 'node:path';
 import type { RemoveOptions } from './interfaces.js';
-import { getMatchedFiles, throwOrCallback } from './utils.js';
+import { getExcludeMatcher, getMatchedFiles, getRemovalPlan, throwOrCallback } from './utils.js';
 
-/**
- * Remove the files or directories, the item(s) can be provided via positional arguments or via a `--glob` pattern.
- * @param {RemoveOptions} options - CLI options
- * @param {(e?: Error) => void} callback - optional callback that will be executed after remove is finished or when an error occurs
- */
+/** Remove paths or glob matches and call the callback on completion or failure. */
 export function removeSync(opts: RemoveOptions = {}, callback?: (e?: Error) => void) {
+  const { cwd, glob, dryRun, verbose, stat } = opts;
   const cb = callback || opts.callback;
-  let paths: string[] = [];
-  if (typeof opts.paths === 'string' && opts.paths.length > 0) {
-    paths = [opts.paths];
-  } else if (Array.isArray(opts.paths)) {
-    paths = opts.paths.filter(p => typeof p === 'string' && p.length > 0);
-  }
-
-  let errorMsg = '';
-  if (!paths.length && !opts.glob) {
-    errorMsg =
-      'Please make sure to provide file paths via command arguments or via `--glob` pattern, i.e.: "remove dir" or "remove --glob dir/**/*.js"';
-  } else if (paths.length > 0 && opts.glob) {
-    errorMsg = 'Providing both `--paths` and `--glob` pattern at the same time is not supported, you must chose only one.';
-  }
+  let paths = (Array.isArray(opts.paths) ? opts.paths : [opts.paths]).filter((p): p is string => typeof p === 'string' && p.length > 0);
+  const errorMsg =
+    !paths.length && !glob
+      ? 'Please make sure to provide file paths via command arguments or via `--glob` pattern, i.e.: "remove dir" or "remove --glob dir/**/*.js"'
+      : paths.length && glob
+        ? 'Providing both `--paths` and `--glob` pattern at the same time is not supported, you must chose only one.'
+        : '';
 
   if (errorMsg) {
     throwOrCallback(new Error(errorMsg), cb);
     return;
   }
 
-  let pathExists = false;
-  // paths is always an array now
-  const requiresCwdChange = !!(paths.length && opts.cwd);
-  if (!paths.length && opts.glob) {
-    paths = getMatchedFiles(opts.glob, { cwd: opts.cwd, exclude: opts.exclude, all: opts.all });
-  }
-
-  if (opts.stat || opts.verbose) {
-    console.time('Duration');
-  }
-  // start dry-run print
-  opts.dryRun && console.log('-- dry-run --');
-
-  paths.forEach(path => {
-    // do we need to resolve file/dir from a different cwd?
-    if (requiresCwdChange) {
-      path = resolve(opts.cwd || '.', path);
+  let removed = 0;
+  const started = performance.now();
+  try {
+    const excluded = glob ? getExcludeMatcher(opts) : undefined;
+    // Handle parents first so overlapping matches have the same plan during deletion and dry runs.
+    const handled = glob || dryRun ? new Set<string>() : undefined;
+    if (glob) {
+      paths = getMatchedFiles(glob, opts)
+        .map(path => (cwd ? path : resolve(path)))
+        .sort((a, b) => a.length - b.length);
     }
 
-    const metadata = lstatSync(path, { throwIfNoEntry: false });
-    if (metadata) {
-      const isDir = metadata.isDirectory();
-
-      if (opts.dryRun) {
-        console.log(`would remove ${isDir ? 'directory recursively' : 'file'}: ${path}`);
-      } else {
-        opts.verbose && console.log(`removing ${isDir ? 'directory recursively' : 'file'}: ${path}`);
-        if (isDir) {
-          rmSync(path, { recursive: true, force: true, maxRetries: process.platform === 'win32' ? 10 : 0 }); // delete folder recursively
-        } else {
-          unlinkSync(path); // delete file
+    dryRun && console.log('-- dry-run --');
+    for (let path of paths) {
+      if ((!glob && cwd) || /[/\\]$/.test(path)) {
+        path = resolve(cwd || '.', path);
+      }
+      if (handled?.size) {
+        let parent = glob ? path : resolve(path);
+        while (!handled.has(parent) && dirname(parent) !== parent) {
+          parent = dirname(parent);
+        }
+        if (handled.has(parent)) {
+          continue;
         }
       }
-      pathExists = true;
+
+      const metadata = lstatSync(path, { throwIfNoEntry: false });
+      if (!metadata) {
+        continue;
+      }
+
+      const plan = excluded ? getRemovalPlan(path, metadata.isDirectory(), excluded) : [{ path, isDirectory: metadata.isDirectory() }];
+      for (const item of plan) {
+        if (dryRun || verbose) {
+          console.log(`${dryRun ? 'would remove' : 'removing'} ${item.isDirectory ? 'directory recursively' : 'file'}: ${item.path}`);
+        }
+        if (!dryRun) {
+          if (item.isDirectory) {
+            rmSync(item.path, { recursive: true, force: true, maxRetries: process.platform === 'win32' ? 10 : 0 });
+          } else {
+            unlinkSync(item.path);
+          }
+        }
+        removed++;
+      }
+      if (metadata.isDirectory() || dryRun) {
+        handled?.add(glob ? path : resolve(path));
+      }
     }
-  });
 
-  if (opts.stat || opts.verbose) {
-    console.log(`Removed:  ${paths.length} items`);
-    console.timeEnd('Duration');
+    if (stat || verbose) {
+      console.log(`${dryRun ? 'Would remove' : 'Removed'}:  ${removed} items`);
+      console.log(`Duration: ${(performance.now() - started).toFixed(3)}ms`);
+    }
+    dryRun && console.log('-- end --');
+  } catch (error) {
+    throwOrCallback(error as Error, cb);
+    return;
   }
-
-  // end dry-run print & execute callback when defined
-  opts.dryRun && console.log('-- end --');
   typeof cb === 'function' && cb();
-  return pathExists;
+  return removed > 0;
 }
