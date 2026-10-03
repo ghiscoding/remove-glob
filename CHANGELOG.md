@@ -1,6 +1,17 @@
 # Change Log 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.3](https://github.com/ghiscoding/remove-glob/compare/v1.2.2...v1.2.3) (2026-10-03)
+
+### Bug Fixes
+
+* **deps:** update all non-major dependencies ([#73](https://github.com/ghiscoding/remove-glob/issues/73)) ([c477082](https://github.com/ghiscoding/remove-glob/commit/c4770828ce838b284b77132a211605925a548975))
+* preserve excluded descendants and correct glob removal ([#75](https://github.com/ghiscoding/remove-glob/issues/75)) ([4757a3e](https://github.com/ghiscoding/remove-glob/commit/4757a3e4acca496edbe6427fc81c29bb44f35fdc))
+
+### Performance Improvements
+
+* batch glob matching and reduce filesystem checks ([#74](https://github.com/ghiscoding/remove-glob/issues/74)) ([ff8633a](https://github.com/ghiscoding/remove-glob/commit/ff8633a9ee41817ef6d126e5f18335a9d49cd0b3))
+
 ## [1.2.2](https://github.com/ghiscoding/remove-glob/compare/v1.2.1...v1.2.2) (2026-08-22)
 
 ### Bug Fixes
