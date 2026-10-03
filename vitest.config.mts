@@ -5,6 +5,7 @@ export default defineConfig({
     cache: false,
     clearMocks: true,
     environment: 'node',
+    include: ['src/**/*.spec.ts'],
     deps: {
       interopDefault: false,
     },

@@ -1,5 +1,5 @@
 export interface RemoveOptions {
-  /** Callback to run when the execution finished or an error occured */
+  /** Callback to run when execution finishes or validation, matching, or deletion fails */
   callback?: (e?: Error) => void;
 
   /**
@@ -22,7 +22,7 @@ export interface RemoveOptions {
    */
   paths?: string | string[];
 
-  /** Show the stats of the removed items */
+  /** Show duration and completed removal operations (planned operations during dry runs) */
   stat?: boolean;
 
   /** Print more information to console */
@@ -34,8 +34,6 @@ export interface RemoveOptions {
    */
   exclude?: string | string[];
 
-  /**
-   * If true, include dotfiles (files starting with a dot) when matching glob patterns.
-   */
+  /** If true, include dotfiles and traverse dot-directories when matching glob patterns. */
   all?: boolean;
 }
